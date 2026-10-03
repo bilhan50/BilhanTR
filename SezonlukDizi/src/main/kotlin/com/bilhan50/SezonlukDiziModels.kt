@@ -1,0 +1,22 @@
+// ! Bu araç @bilhan50 tarafından | @bilhan50 için yazılmıştır.
+
+package com.bilhan50
+
+import com.fasterxml.jackson.annotation.JsonProperty
+
+
+data class Kaynak(
+    @JsonProperty("status") val status: String,
+    @JsonProperty("data") val data: List<Veri>,
+)
+
+data class Veri(
+    @JsonProperty("baslik") val baslik: String,
+    @JsonProperty("id") val id: Int,
+    @JsonProperty("kalite") val kalite: Int,
+)
+
+data class AspData(
+    val alternatif : String,
+    val embed : String
+)

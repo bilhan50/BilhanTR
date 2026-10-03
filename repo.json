@@ -1,0 +1,8 @@
+{
+    "name": "Turkish Providers Repository | @bilhan50",
+    "description": "Türkçe içerikli eklenti havuzu",
+    "manifestVersion": 1,
+    "pluginLists": [
+      "https://raw.githubusercontent.com/bilhan50/BilhanTR/builds/plugins.json"
+    ]
+}
