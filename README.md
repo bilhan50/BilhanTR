@@ -16,20 +16,19 @@ CloudStream için Türkçe yayın yapan film ve dizi sitelerine ait **41 eklenti
 | Yöntem | Yapmanız gereken |
 | :--- | :--- |
 | **Otomatik** | Cihazda [bu bağlantıya tıklayın](cloudstreamrepo://raw.githubusercontent.com/bilhan50/BilhanTR/main/repo.json) |
-| **Kısa kod** | `Depo ekle` → `Depo URL'si` kutusuna **`!bilhantr`** yazın |
-| **Manuel URL** | `Depo ekle` → `Depo URL'si` kutusuna `https://raw.githubusercontent.com/bilhan50/BilhanTR/main/repo.json` yazın |
+| **Manuel URL** | `Depo ekle` → `Depo URL'si` kutusuna **aşağıdaki adresi** yapıştırın |
+
+```
+https://raw.githubusercontent.com/bilhan50/BilhanTR/main/repo.json
+```
+
+> ⚠️ **Kısa kod (`bilhantr` / `!bilhantr`) şu anda ÇALIŞMIYOR.**
+> Bu kodlar `cutt.ly` ve `py.md` servislerinde takma ad açılmasını gerektirir ve bu servisler
+> bazı ağlarda açılmıyor → CloudStream **"VPN veya bağlantı hatası"** verir.
+> Geçerli tek adres **yukarıdaki raw URL**'dir.
 
 > ⚠️ `Depo URL'si` kutusuna **`https://github.com/bilhan50/BilhanTR`** yazmak **çalışmaz**.
-> Doğru adres her zaman `repo.json` dosyasının **raw** bağlantısıdır (tabloda üçüncü satır).
-
-### Kısa kod nedir?
-
-CloudStream kısa kodları üçüncü parti kısaltma servisleri üzerinden çözümler:
-
-- `!` **ile başlayan** kodlar → `py.md` servisinde aranır → `!bilhantr` ✔
-- `!` **olmayan** kodlar → `cutt.ly` servisinde aranır → `bilhantr` (cutt.ly hesabında `bilhantr` takma adı tanımlandıktan sonra çalışır)
-
-Kısa kod çalışmıyorsa **manuel URL** her zaman sorunsuzdur.
+> Doğru adres her zaman `repo.json` dosyasının **raw** bağlantısıdır.
 
 ---
 
@@ -88,7 +87,6 @@ Yeni eklenti eklemek için klasör açın, `build.gradle.kts` + `src/main/kotlin
 - [hexated/cloudstream-extensions-hexated](https://github.com/hexated/cloudstream-extensions-hexated)
 - [Jacekun/cs3xxx-repo](https://github.com/Jacekun/cs3xxx-repo)
 - [recloudstream/extensions](https://github.com/recloudstream/extensions)
-- Orijinal geliştirici: [keyiflerolsun/Kekik-cloudstream](https://github.com/keyiflerolsun/Kekik-cloudstream)
 
 ---
 
