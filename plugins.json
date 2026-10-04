@@ -227,11 +227,11 @@
         "name": "FilmMakinesi"
     },
     {
-        "iconUrl": "https://www.google.com/s2/favicons?domain=www.filmmodu17.com&sz=%size%",
-        "fileHash": "sha256-f993ca443065314bc71bdee9a26d228343406f14369c4fbbe1431dd85bade78d",
+        "iconUrl": "https://www.google.com/s2/favicons?domain=www.filmmodu.one&sz=%size%",
+        "fileHash": "sha256-c58a1465e57c9ed201ae871bbb09ffa178c1b2258e6516975a02ad84f01feca9",
         "apiVersion": 1,
         "repositoryUrl": "https://github.com/bilhan50/BilhanTR",
-        "fileSize": 16328,
+        "fileSize": 16325,
         "status": 1,
         "language": "tr",
         "authors": [
@@ -240,18 +240,18 @@
         "tvTypes": [
             "Movie"
         ],
-        "version": 8,
+        "version": 9,
         "internalName": "FilmModu",
         "description": "Film modun geldiyse y\u00fcksek kalitede en yeni filmleri izle, 1080p izleyebilece\u011finiz reklamsiz film sitesi.",
         "url": "https://raw.githubusercontent.com/bilhan50/BilhanTR/builds/FilmModu.cs3",
         "name": "FilmModu"
     },
     {
-        "iconUrl": "https://www.google.com/s2/favicons?domain=fullhdfilm.pro&sz=%size%",
-        "fileHash": "sha256-b3f101187b937092e1c83b5cb825b97e6cfc78023a229b524b3e2a1ec122a97d",
+        "iconUrl": "https://www.google.com/s2/favicons?domain=hdfilm.us&sz=%size%",
+        "fileHash": "sha256-0a71bdf1bcab768e4d21f3cc45564d1fdf46f71443e86498e475567e47d4df0a",
         "apiVersion": 1,
         "repositoryUrl": "https://github.com/bilhan50/BilhanTR",
-        "fileSize": 20748,
+        "fileSize": 24481,
         "status": 1,
         "language": "tr",
         "authors": [
@@ -261,7 +261,7 @@
             "Movie",
             "TvSeries"
         ],
-        "version": 12,
+        "version": 13,
         "internalName": "FullHDFilm",
         "description": "Fullhdfilm ile en yeni vizyon filmler Full HD ve kesintisiz film sizlerle. \u00d6zg\u00fcn film ar\u015fivimizle en \u00fcst\u00fcn kaliteli film izle keyfini sunuyoruz.",
         "url": "https://raw.githubusercontent.com/bilhan50/BilhanTR/builds/FullHDFilm.cs3",
@@ -269,10 +269,10 @@
     },
     {
         "iconUrl": "https://www.google.com/s2/favicons?domain=www.fullhdfilmizlesene.de&sz=%size%",
-        "fileHash": "sha256-2a19e7e177078d5f9f25ad3244be1e108027043ad619af31a56fe405af74329c",
+        "fileHash": "sha256-c503f25f77fc21c256247b6f86c93dae1f4a7b920f7966cc0e4d161bfa53385f",
         "apiVersion": 1,
         "repositoryUrl": "https://github.com/bilhan50/BilhanTR",
-        "fileSize": 33874,
+        "fileSize": 33766,
         "status": 1,
         "language": "tr",
         "authors": [
@@ -281,7 +281,7 @@
         "tvTypes": [
             "Movie"
         ],
-        "version": 4,
+        "version": 5,
         "internalName": "FullHDFilmizlesene",
         "description": "Sinema zevkini evinize kadar getirdik. T\u00fcrkiye'nin lider Film sitesinde, en yeni filmleri Full HD izleyin.",
         "url": "https://raw.githubusercontent.com/bilhan50/BilhanTR/builds/FullHDFilmizlesene.cs3",
@@ -790,11 +790,11 @@
         "name": "Watch2Movies"
     },
     {
-        "iconUrl": "https://www.google.com/s2/favicons?domain=webteizle2.com&sz=%size%",
-        "fileHash": "sha256-04521e5b54973eecd3445e86c8275267da4c83b6e744ca883afa24cc8366ba5a",
+        "iconUrl": "https://www.google.com/s2/favicons?domain=webteizle.info&sz=%size%",
+        "fileHash": "sha256-f86a044a6d1d740366136b7439d4082c8ecba54114f19d0c4bb0000416c18f58",
         "apiVersion": 1,
         "repositoryUrl": "https://github.com/bilhan50/BilhanTR",
-        "fileSize": 26631,
+        "fileSize": 26627,
         "status": 1,
         "language": "tr",
         "authors": [
@@ -803,7 +803,7 @@
         "tvTypes": [
             "Movie"
         ],
-        "version": 15,
+        "version": 16,
         "internalName": "WebteIzle",
         "description": "Her t\u00fcrl\u00fc filmi ister dublaj ister altyaz\u0131l\u0131, en kaliteli bir \u015fekilde izleyebilece\u011finiz ar\u015fivi en geni\u015f ger\u00e7ek film izleme siteniz.",
         "url": "https://raw.githubusercontent.com/bilhan50/BilhanTR/builds/WebteIzle.cs3",
