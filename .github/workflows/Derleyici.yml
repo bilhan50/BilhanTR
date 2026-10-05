@@ -45,6 +45,10 @@ jobs:
 
       - name: Android SDK Ayarla
         uses: android-actions/setup-android@v3.2.2
+        with:
+          # 'tools' paketi modern Android SDK'dan kaldirildi; sdkmanager onu
+          # bulamayinca exit code 1 ile patliyordu. Sadece kurulu paketler isteniyor.
+          packages: "platform-tools"
 
       - name: Eklentileri Derle
         run: |
