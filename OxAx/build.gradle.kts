@@ -1,4 +1,4 @@
-version = 1
+version = 2
 
 cloudstream {
     authors     = listOf("bilhan50")
@@ -12,7 +12,7 @@ cloudstream {
      * 2: Slow
      * 3: Beta only
     **/
-    status  = 1 // will be 3 if unspecified
+    status  = 0 // will be 3 if unspecified
     tvTypes = listOf("NSFW", "Live")
     iconUrl = "https://cdn1.iconfinder.com/data/icons/nsfw-1/64/tv-adult-content-porn-512.png"
 }

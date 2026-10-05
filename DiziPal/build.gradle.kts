@@ -1,4 +1,4 @@
-version = 28
+version = 29
 
 cloudstream {
     authors     = listOf("bilhan50", "muratcesmecioglu")
@@ -14,5 +14,5 @@ cloudstream {
     **/
     status  = 1 // will be 3 if unspecified
     tvTypes = listOf("TvSeries", "Movie")
-    iconUrl = "https://www.google.com/s2/favicons?domain=https://dizipal683.com&sz=%size%"
+    iconUrl = "https://www.google.com/s2/favicons?domain=dizipal2135.com&sz=%size%"
 }

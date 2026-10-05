@@ -58,7 +58,12 @@ class FilmModu : MainAPI() {
     private fun Element.toMainPageResult(): SearchResponse? {
         val title     = this.selectFirst("a")?.text() ?: return null
         val href      = fixUrlNull(this.selectFirst("a")?.attr("href")) ?: return null
-        val posterUrl = fixUrlNull(this.selectFirst("picture img")?.attr("src"))
+
+        // * Afisler lazy-load: gorsel <img src="data:..."> yerine gercek adresi data-src icinde tutar.
+        val img       = this.selectFirst("picture img")
+        val posterUrl = (img?.attr("data-src")?.takeIf { it.isNotBlank() && !it.startsWith("data:") }
+            ?: img?.attr("src")?.takeIf { it.isNotBlank() && !it.startsWith("data:") })
+            ?.let { fixUrlNull(it) }
 
         return newMovieSearchResponse(title, href, TvType.Movie) { this.posterUrl = posterUrl }
     }
