@@ -1,10 +1,10 @@
 [
     {
-        "iconUrl": "https://www.google.com/s2/favicons?domain=animecix.net&sz=%size%",
-        "fileHash": "sha256-95fe9dc093c8ba8cabe64e544063aa62a72ebdda4f7f4f2d8df3836b94f17c53",
+        "iconUrl": "https://www.google.com/s2/favicons?domain=animecix.tv&sz=%size%",
+        "fileHash": "sha256-c191a9ede35e1d181ac2f26e8baca947e4f8b6a99205cca6e03d4f6d70bba06e",
         "apiVersion": 1,
         "repositoryUrl": "https://github.com/bilhan50/BilhanTR",
-        "fileSize": 23476,
+        "fileSize": 23469,
         "status": 1,
         "language": "tr",
         "authors": [
@@ -15,7 +15,7 @@
         "tvTypes": [
             "Anime"
         ],
-        "version": 7,
+        "version": 8,
         "internalName": "AnimeciX",
         "description": "AnimeciX, animeleri ke\u015ffedebilece\u011finiz ve animeler hakk\u0131nda her \u015feyi \u00f6\u011frenebilece\u011finiz bir payla\u015f\u0131m platformudur.",
         "url": "https://raw.githubusercontent.com/bilhan50/BilhanTR/builds/AnimeciX.cs3",
@@ -164,11 +164,11 @@
         "name": "DiziMom"
     },
     {
-        "iconUrl": "https://www.google.com/s2/favicons?domain=https://dizipal683.com&sz=%size%",
-        "fileHash": "sha256-061bc18100f6172a5e532d1509214b3138eae64485d7ccfec9b308a844cd130d",
+        "iconUrl": "https://www.google.com/s2/favicons?domain=dizipal2135.com&sz=%size%",
+        "fileHash": "sha256-431d3d473b22c5d57e0ec840d95b89dc01fda021ef5080c8cf107609103f4774",
         "apiVersion": 1,
         "repositoryUrl": "https://github.com/bilhan50/BilhanTR",
-        "fileSize": 19166,
+        "fileSize": 19167,
         "status": 1,
         "language": "tr",
         "authors": [
@@ -179,15 +179,15 @@
             "TvSeries",
             "Movie"
         ],
-        "version": 28,
+        "version": 29,
         "internalName": "DiziPal",
         "description": "en yeni dizileri g\u00fcvenli ve h\u0131zl\u0131 \u015fekilde sunar.",
         "url": "https://raw.githubusercontent.com/bilhan50/BilhanTR/builds/DiziPal.cs3",
         "name": "DiziPal"
     },
     {
-        "iconUrl": "https://www.google.com/s2/favicons?domain=www.diziyou.co&sz=%size%",
-        "fileHash": "sha256-0871b117bd34c946691cfe4688aa0a87f84b586c53f5cc349fd619fbdd7e86fc",
+        "iconUrl": "https://www.google.com/s2/favicons?domain=www.diziyou.one&sz=%size%",
+        "fileHash": "sha256-0ccd5eda3029d9959396a8fd91057b1690e444b66f8cc57b28aed8bc912ced43",
         "apiVersion": 1,
         "repositoryUrl": "https://github.com/bilhan50/BilhanTR",
         "fileSize": 15584,
@@ -199,7 +199,7 @@
         "tvTypes": [
             "TvSeries"
         ],
-        "version": 7,
+        "version": 8,
         "internalName": "DiziYou",
         "description": "Diziyou en kaliteli T\u00fcrk\u00e7e dublaj ve altyaz\u0131l\u0131 yabanc\u0131 dizi izleme sitesidir. G\u00fcncel ve efsanevi dizileri 1080p Full HD kalitede izlemek i\u00e7in hemen t\u0131kla!",
         "url": "https://raw.githubusercontent.com/bilhan50/BilhanTR/builds/DiziYou.cs3",
@@ -228,10 +228,10 @@
     },
     {
         "iconUrl": "https://www.google.com/s2/favicons?domain=www.filmmodu.one&sz=%size%",
-        "fileHash": "sha256-c58a1465e57c9ed201ae871bbb09ffa178c1b2258e6516975a02ad84f01feca9",
+        "fileHash": "sha256-3945367c0e8aaab2ef468e68baeedf488a2c6eb5200093bd9d83523915978d93",
         "apiVersion": 1,
         "repositoryUrl": "https://github.com/bilhan50/BilhanTR",
-        "fileSize": 16325,
+        "fileSize": 16596,
         "status": 1,
         "language": "tr",
         "authors": [
@@ -240,7 +240,7 @@
         "tvTypes": [
             "Movie"
         ],
-        "version": 9,
+        "version": 10,
         "internalName": "FilmModu",
         "description": "Film modun geldiyse y\u00fcksek kalitede en yeni filmleri izle, 1080p izleyebilece\u011finiz reklamsiz film sitesi.",
         "url": "https://raw.githubusercontent.com/bilhan50/BilhanTR/builds/FilmModu.cs3",
@@ -415,11 +415,11 @@
         "name": "IzleAI"
     },
     {
-        "iconUrl": "https://www.google.com/s2/favicons?domain=https://jetfilmizle.de&sz=%size%",
-        "fileHash": "sha256-de3127e5020bf1cad5915bd71452b1e85f8f26b27751a3ef90f1ebed400f1ef3",
+        "iconUrl": "https://www.google.com/s2/favicons?domain=jetfilmizle.now&sz=%size%",
+        "fileHash": "sha256-6cbbe4b502629e9a22bfbf5c542589b6b8956d60dfb1334d35e10b851cfa37a6",
         "apiVersion": 1,
         "repositoryUrl": "https://github.com/bilhan50/BilhanTR",
-        "fileSize": 16670,
+        "fileSize": 16676,
         "status": 1,
         "language": "tr",
         "authors": [
@@ -428,7 +428,7 @@
         "tvTypes": [
             "Movie"
         ],
-        "version": 19,
+        "version": 20,
         "internalName": "JetFilmizle",
         "description": "Binlerce Film \u0130zleme Se\u00e7ene\u011fiyle En \u0130yi Film \u0130zleme Sitesi",
         "url": "https://raw.githubusercontent.com/bilhan50/BilhanTR/builds/JetFilmizle.cs3",
@@ -499,11 +499,11 @@
     },
     {
         "iconUrl": "https://cdn1.iconfinder.com/data/icons/nsfw-1/64/tv-adult-content-porn-512.png",
-        "fileHash": "sha256-c3690689c5ac5cc54c12c9aaad94d82c28f2be169d4d961c2c04bd8ca2d52859",
+        "fileHash": "sha256-759d020449cf9b1158d2f40db6f6e35deadd3b8ff7ff90daab60ea6bd45efb86",
         "apiVersion": 1,
         "repositoryUrl": "https://github.com/bilhan50/BilhanTR",
         "fileSize": 14997,
-        "status": 1,
+        "status": 0,
         "language": "ru",
         "authors": [
             "bilhan50"
@@ -512,7 +512,7 @@
             "NSFW",
             "Live"
         ],
-        "version": 1,
+        "version": 2,
         "internalName": "OxAx",
         "description": "(VPN) \u041e\u0425-\u0410\u0425.\u0422\u0412 - \u0441\u0430\u0439\u0442 \u0434\u043b\u044f \u043f\u0440\u043e\u0441\u043c\u043e\u0442\u0440\u0430 \u0432\u0437\u0440\u043e\u0441\u043b\u044b\u0445 \u0422\u0412 \u043e\u043d\u043b\u0430\u0439\u043d \u0431\u0435\u0437 \u043a\u0430\u043a\u0438\u0445 \u043b\u0438\u0431\u043e \u0440\u0435\u0433\u0438\u0441\u0442\u0440\u0430\u0446\u0438\u0439. \u0421\u043c\u043e\u0442\u0440\u0438\u0442\u0435 \u0431\u0435\u0441\u043f\u043b\u0430\u0442\u043d\u043e \u043d\u0430 \u043c\u043e\u0431\u0438\u043b\u044c\u043d\u044b\u0445 \u0443\u0441\u0442\u0440\u043e\u0439\u0441\u0442\u0432\u0430\u0445 iPad, iPhone \u0438 Android.",
         "url": "https://raw.githubusercontent.com/bilhan50/BilhanTR/builds/OxAx.cs3",
@@ -605,11 +605,11 @@
         "name": "SetFilmIzle"
     },
     {
-        "iconUrl": "https://www.google.com/s2/favicons?domain=sezonlukdizi6.com&sz=%size%",
-        "fileHash": "sha256-5fd129848eb16006c80ff11b23f5b7640c433ad0fd0e135304eee3c4d71026ff",
+        "iconUrl": "https://www.google.com/s2/favicons?domain=sezonlukdizi.cc&sz=%size%",
+        "fileHash": "sha256-8ade72a3aa1da25ad854c1867ee20b2d3fac893befce65c449836369c6c0b7ad",
         "apiVersion": 1,
         "repositoryUrl": "https://github.com/bilhan50/BilhanTR",
-        "fileSize": 22400,
+        "fileSize": 22394,
         "status": 1,
         "language": "tr",
         "authors": [
@@ -619,7 +619,7 @@
         "tvTypes": [
             "TvSeries"
         ],
-        "version": 2,
+        "version": 3,
         "internalName": "SezonlukDizi",
         "description": "G\u00fcncel ve eski dizileri en iyi g\u00f6r\u00fcnt\u00fc kalitesiyle bulabilece\u011finiz yabanc\u0131 dizi izleme siteniz.",
         "url": "https://raw.githubusercontent.com/bilhan50/BilhanTR/builds/SezonlukDizi.cs3",
@@ -647,11 +647,11 @@
     },
     {
         "iconUrl": "https://play-lh.googleusercontent.com/brwGNmr7IjA_MKk_TTPs0va10hdKE_bD_a1lnKoiMuCayW98EHpRv55edA6aEoJlmwfX",
-        "fileHash": "sha256-2944639f5bb5b05f2b7b1821c8be9a771ac384946f01010882e77315a0133ad8",
+        "fileHash": "sha256-f1c38513f8cc0dba5968342031274f12fd127c66d4c3775e7ad52b5e928da7be",
         "apiVersion": 1,
         "repositoryUrl": "https://github.com/bilhan50/BilhanTR",
-        "fileSize": 27614,
-        "status": 1,
+        "fileSize": 27616,
+        "status": 0,
         "language": "tr",
         "authors": [
             "bilhan50",
@@ -662,7 +662,7 @@
             "TvSeries",
             "Anime"
         ],
-        "version": 11,
+        "version": 12,
         "internalName": "SineWix",
         "description": "Sinewix | \u00dccretsiz Film - Dizi - Anime \u0130zleme Uygulamas\u0131.",
         "url": "https://raw.githubusercontent.com/bilhan50/BilhanTR/builds/SineWix.cs3",
@@ -710,11 +710,11 @@
         "name": "SuperFilmGeldi"
     },
     {
-        "iconUrl": "https://www.google.com/s2/favicons?domain=www.turkanime.co&sz=%size%",
-        "fileHash": "sha256-9c41b61845b2dc5b29d20d046117b5f048ec00b3992f280a9264ca4519edf99b",
+        "iconUrl": "https://www.google.com/s2/favicons?domain=www.turkanime.tv&sz=%size%",
+        "fileHash": "sha256-fdf51c3f19e222695528c5c6dd01c4ac3ea02d1eede8ce3fc9c7fe0bbe4c72fb",
         "apiVersion": 1,
         "repositoryUrl": "https://github.com/bilhan50/BilhanTR",
-        "fileSize": 17487,
+        "fileSize": 17489,
         "status": 1,
         "language": "tr",
         "authors": [
@@ -723,7 +723,7 @@
         "tvTypes": [
             "Anime"
         ],
-        "version": 1,
+        "version": 2,
         "internalName": "TurkAnime",
         "description": "T\u00fcrk Anime TV - T\u00fcrkiye'nin Online Anime izleme sitesi.",
         "url": "https://raw.githubusercontent.com/bilhan50/BilhanTR/builds/TurkAnime.cs3",
