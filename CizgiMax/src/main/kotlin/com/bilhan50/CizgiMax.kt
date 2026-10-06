@@ -13,7 +13,7 @@ class CizgiMax : MainAPI() {
     override val hasMainPage          = true
     override var lang                 = "tr"
     override val hasQuickSearch       = true
-    override val supportedTypes       = setOf(TvType.Cartoon)
+    override val supportedTypes       = setOf(TvType.Cartoon, TvType.TvSeries, TvType.Movie)
 
     override val mainPage = mainPageOf(
         "?orderby=date&order=DESC"                                   to "Son Eklenenler",

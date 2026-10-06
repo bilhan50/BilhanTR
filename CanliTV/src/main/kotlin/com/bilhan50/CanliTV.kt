@@ -16,7 +16,9 @@ class CanliTV : MainAPI() {
     override var lang                 = "tr"
     override val hasQuickSearch       = true
     override val hasDownloadSupport   = false
-    override val supportedTypes       = setOf(TvType.Live)
+    override val supportedTypes       = setOf(TvType.Live, TvType.TvSeries)
+
+    override val mainPage           = mainPageOf("${mainUrl}" to "Kanallar")
 
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
         val kanallar = IptvPlaylistParser().parseM3U(app.get(mainUrl).text)

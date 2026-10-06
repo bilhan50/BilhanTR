@@ -14,7 +14,7 @@ class AnimeciX : MainAPI() {
     override val hasMainPage          = true
     override var lang                 = "tr"
     override val hasQuickSearch       = false
-    override val supportedTypes       = setOf(TvType.Anime)
+    override val supportedTypes       = setOf(TvType.Anime, TvType.TvSeries, TvType.Movie)
 
     override var sequentialMainPage = true        // * https://recloudstream.github.io/dokka/-cloudstream/com.lagradost.cloudstream3/-main-a-p-i/index.html#-2049735995%2FProperties%2F101969414
     override var sequentialMainPageDelay       = 200L  // ? 0.20 saniye

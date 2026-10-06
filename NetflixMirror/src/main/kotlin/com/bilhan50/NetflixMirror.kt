@@ -29,6 +29,8 @@ class NetflixMirror : MainAPI() {
     private var cookieValue = ""
     private val headers      = mapOf("X-Requested-With" to "XMLHttpRequest")
 
+    override val mainPage           = mainPageOf("${mainUrl}" to "Netflix")
+
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
         cookieValue = cookieValue.ifEmpty { bypassVerification(mainUrl) }
         val cookies  = mapOf(

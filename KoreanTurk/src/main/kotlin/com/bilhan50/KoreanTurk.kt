@@ -14,7 +14,7 @@ class KoreanTurk : MainAPI() {
     override val hasMainPage          = true
     override var lang                 = "tr"
     override val hasQuickSearch       = false
-    override val supportedTypes       = setOf(TvType.AsianDrama)
+    override val supportedTypes       = setOf(TvType.AsianDrama, TvType.TvSeries)
 
     override val mainPage = mainPageOf(
         "${mainUrl}/bolumler/page/"       to "Son Eklenenler",

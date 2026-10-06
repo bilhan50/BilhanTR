@@ -16,7 +16,7 @@ class DiziKorea : MainAPI() {
     override val hasMainPage          = true
     override var lang                 = "tr"
     override val hasQuickSearch       = true
-    override val supportedTypes       = setOf(TvType.AsianDrama)
+    override val supportedTypes       = setOf(TvType.AsianDrama, TvType.TvSeries)
 
     override val mainPage = mainPageOf(
         "${mainUrl}/tum-kore-dizileri/"   to "Kore Dizileri",

@@ -12,7 +12,9 @@ class YouTube : MainAPI() {
     override var name                 = "YouTube"
     override val hasMainPage          = true
     override var lang                 = "tr"
-    override val supportedTypes       = setOf(TvType.Others)
+    override val supportedTypes       = setOf(TvType.Others, TvType.Movie, TvType.TvSeries)
+
+    override val mainPage           = mainPageOf("${mainUrl}" to "Trend")
 
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
         val trending = tryParseJson<List<SearchEntry>>(

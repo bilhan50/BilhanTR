@@ -16,7 +16,7 @@ class TurkAnime : MainAPI() {
     override val hasMainPage          = true
     override var lang                 = "tr"
     override val hasQuickSearch       = false
-    override val supportedTypes       = setOf(TvType.Anime)
+    override val supportedTypes       = setOf(TvType.Anime, TvType.TvSeries, TvType.Movie)
 
     override val mainPage = mainPageOf(
         "${mainUrl}/anime-turu/1/Aksiyon"                                   to "Aksiyon",

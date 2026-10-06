@@ -14,7 +14,7 @@ class BelgeselX : MainAPI() {
     override val hasMainPage          = true
     override var lang                 = "tr"
     override val hasQuickSearch       = false
-    override val supportedTypes       = setOf(TvType.Documentary)
+    override val supportedTypes       = setOf(TvType.Documentary, TvType.Movie)
 
     override val mainPage = mainPageOf(
         "${mainUrl}/konu/turk-tarihi-belgeselleri&page=" to "Türk Tarihi",

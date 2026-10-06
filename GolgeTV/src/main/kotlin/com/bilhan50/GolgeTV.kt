@@ -25,7 +25,7 @@ class GolgeTV : MainAPI() {
     override var mainUrl = "https://panel.cloudgolge.shop/appMainGetData.php"
     override val hasMainPage = true
     override var lang = "tr"
-    override val supportedTypes = setOf(TvType.Live)
+    override val supportedTypes       = setOf(TvType.Live, TvType.TvSeries)
 
     override val mainPage = mainPageOf(
         this.mainUrl to "ULUSAL",
