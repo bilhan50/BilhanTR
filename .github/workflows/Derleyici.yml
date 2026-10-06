@@ -50,11 +50,41 @@ jobs:
           # bulamayinca exit code 1 ile patliyordu. Sadece kurulu paketler isteniyor.
           packages: "platform-tools"
 
+      - name: JitPack Hazirligi
+        # JitPack master-SNAPSHOT'u ilk istekte build eder ve o sirada 404 dondurur;
+        # Gradle bunu "Could not find" hatasi olarak yorumlayip derlemeyi olduruyor.
+        # Bu adim iki bağımlılığı da gercek dosyalari inene kadar isitir.
+        run: |
+          bases=(
+            "https://jitpack.io/com/github/recloudstream/gradle/master-SNAPSHOT"
+            "https://jitpack.io/com/github/recloudstream/gradle/gradle/master-SNAPSHOT"
+          )
+          for base in "${bases[@]}"; do
+            ok=0
+            for i in $(seq 1 24); do
+              ver=$(curl -fsSL --max-time 30 "$base/maven-metadata.xml" 2>/dev/null \
+                    | grep -o '<version>[^<]*</version>' | head -n 1 | sed -e 's/<[^>]*>//g')
+              if [ -n "$ver" ]; then
+                code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 30 "$base/gradle-$ver.pom")
+                echo "  [$i] $base/gradle-$ver.pom -> HTTP $code"
+                if [ "$code" = "200" ]; then ok=1; break; fi
+              else
+                echo "  [$i] metadata alinamadi: $base"
+              fi
+              sleep 15
+            done
+            if [ "$ok" != "1" ]; then echo "::warning::JitPack isitilamadi: $base"; fi
+          done
+
       - name: Eklentileri Derle
         run: |
           cd $GITHUB_WORKSPACE/src
           chmod +x gradlew
-          ./gradlew make makePluginsJson
+          if ! ./gradlew make makePluginsJson; then
+            echo "::warning::ilk deneme basarisiz (muhtemelen JitPack), 60sn sonra tekrar deneniyor"
+            sleep 60
+            ./gradlew make makePluginsJson
+          fi
           cp **/build/*.cs3 $GITHUB_WORKSPACE/builds
           cp build/plugins.json $GITHUB_WORKSPACE/builds
 
