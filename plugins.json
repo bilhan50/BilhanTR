@@ -1,10 +1,10 @@
 [
     {
         "iconUrl": "https://www.google.com/s2/favicons?domain=animecix.tv&sz=%size%",
-        "fileHash": "sha256-def26f4d34226bcd19df2be9f84f2e1fa79ad9706d512c7e51a1304a56b4f7b7",
+        "fileHash": "sha256-aa247385224a0d04ffc710daea82d4f7b430a6db126d711f7529d3d3e8ae8445",
         "apiVersion": 1,
         "repositoryUrl": "https://github.com/bilhan50/BilhanTR",
-        "fileSize": 23542,
+        "fileSize": 23543,
         "status": 1,
         "language": "tr",
         "authors": [
@@ -13,9 +13,11 @@
             "JustRelaxable"
         ],
         "tvTypes": [
-            "Anime"
+            "Anime",
+            "TvSeries",
+            "Movie"
         ],
-        "version": 9,
+        "version": 10,
         "internalName": "AnimeciX",
         "description": "AnimeciX, animeleri ke\u015ffedebilece\u011finiz ve animeler hakk\u0131nda her \u015feyi \u00f6\u011frenebilece\u011finiz bir payla\u015f\u0131m platformudur.",
         "url": "https://raw.githubusercontent.com/bilhan50/BilhanTR/builds/AnimeciX.cs3",
@@ -23,10 +25,10 @@
     },
     {
         "iconUrl": "https://www.google.com/s2/favicons?domain=belgeselx.com&sz=%size%",
-        "fileHash": "sha256-9879aee40f86019658cb6834a0f3b705bf22a5ef2144ccb19a61e1cdb4fffc03",
+        "fileHash": "sha256-f2d4fa9f6682f1c67e35c7411aedc8083cbb2964a9421cf2e2576481db81ccb6",
         "apiVersion": 1,
         "repositoryUrl": "https://github.com/bilhan50/BilhanTR",
-        "fileSize": 22689,
+        "fileSize": 22693,
         "status": 1,
         "language": "tr",
         "authors": [
@@ -34,9 +36,10 @@
             "JustRelaxable"
         ],
         "tvTypes": [
-            "Documentary"
+            "Documentary",
+            "Movie"
         ],
-        "version": 5,
+        "version": 6,
         "internalName": "BelgeselX",
         "description": "En yeni belgeseller, t\u00fcrk\u00e7e altyaz\u0131l\u0131 yada dublaj olarak 1080p kalitesinde HD belgesel izle.",
         "url": "https://raw.githubusercontent.com/bilhan50/BilhanTR/builds/BelgeselX.cs3",
@@ -44,7 +47,7 @@
     },
     {
         "iconUrl": "https://www.google.com/s2/favicons?domain=tr.canlitv.team&sz=%size%",
-        "fileHash": "sha256-9fa3eb1d62003987f52fe660cbc6a9ad61a59f659c22baf9eb4f1d15e8e9cc11",
+        "fileHash": "sha256-ee79ddcb5f21cb3112f9a0f7fa0439a0af5730038401e08ae1af7bb0175e8603",
         "apiVersion": 1,
         "repositoryUrl": "https://github.com/bilhan50/BilhanTR",
         "fileSize": 20635,
@@ -55,9 +58,10 @@
             "bilhan50"
         ],
         "tvTypes": [
-            "Live"
+            "Live",
+            "TvSeries"
         ],
-        "version": 5,
+        "version": 6,
         "internalName": "CanliTV",
         "description": "Canl\u0131 TV",
         "url": "https://raw.githubusercontent.com/bilhan50/BilhanTR/builds/CanliTV.cs3",
@@ -65,7 +69,7 @@
     },
     {
         "iconUrl": "https://www.google.com/s2/favicons?domain=cizgimax.online&sz=%size%",
-        "fileHash": "sha256-70303ea10b069fe9a01f727e9181b838c324aae95e5f584f7507737fcd396bc5",
+        "fileHash": "sha256-64111769d62c6561e736cff424df8fcd80f161aa2835950908ef7c1b710be107",
         "apiVersion": 1,
         "repositoryUrl": "https://github.com/bilhan50/BilhanTR",
         "fileSize": 21368,
@@ -75,9 +79,11 @@
             "bilhan50"
         ],
         "tvTypes": [
-            "Cartoon"
+            "Cartoon",
+            "TvSeries",
+            "Movie"
         ],
-        "version": 6,
+        "version": 7,
         "internalName": "CizgiMax",
         "description": "\u00c7izgiMax ile \u00c7izgi Film izlemek art\u0131k daha kolay, donmadan full hd ve reklams\u0131z bir sitedir, i\u00e7erisinde 700 den fazla \u00e7izgi film olan, Bu site bu i\u015fi profesyonelce yap\u0131yor.",
         "url": "https://raw.githubusercontent.com/bilhan50/BilhanTR/builds/CizgiMax.cs3",
@@ -105,7 +111,7 @@
     },
     {
         "iconUrl": "https://www.google.com/s2/favicons?domain=https://dizikorea.vip&sz=%size%",
-        "fileHash": "sha256-e847e46286960eeccf226cfe85a1551b4d977d50fe13bd4cf4f4b25a5d02ac69",
+        "fileHash": "sha256-4861d61a530454dacb0f9082ffb00279275de4fd1feaf880baffa1fa04486ab8",
         "apiVersion": 1,
         "repositoryUrl": "https://github.com/bilhan50/BilhanTR",
         "fileSize": 20987,
@@ -115,9 +121,10 @@
             "bilhan50"
         ],
         "tvTypes": [
-            "AsianDrama"
+            "AsianDrama",
+            "TvSeries"
         ],
-        "version": 5,
+        "version": 6,
         "internalName": "DiziKorea",
         "description": "En G\u00fcncel Kore Dizileri izleme Sitesi",
         "url": "https://raw.githubusercontent.com/bilhan50/BilhanTR/builds/DiziKorea.cs3",
@@ -310,7 +317,7 @@
     },
     {
         "iconUrl": "https://www.apkdelisi.net/wp-content/uploads/2022/03/golge-tv-reklamsiz-mod-apk-canli-tv-apkdelisi-0.jpg",
-        "fileHash": "sha256-8a0b307b5ec72538ee313009086ea41f4af460667a6ec4f1c2329136cf8c1443",
+        "fileHash": "sha256-8bbb3d197cad38e20e09fc01826b8afe2396cc2e32bb9dfd41aa95cf98cf63e9",
         "apiVersion": 1,
         "repositoryUrl": "https://github.com/bilhan50/BilhanTR",
         "fileSize": 29368,
@@ -321,9 +328,10 @@
             "bilhan50"
         ],
         "tvTypes": [
-            "Live"
+            "Live",
+            "TvSeries"
         ],
-        "version": 5,
+        "version": 6,
         "internalName": "GolgeTV",
         "description": "GolgeTV cloudstream eklentisidir. Sevdi\u011finiz yay\u0131n platformlar\u0131n\u0131 ve canl\u0131 ma\u00e7lar\u0131 burada bulabilirsiniz.",
         "url": "https://raw.githubusercontent.com/bilhan50/BilhanTR/builds/GolgeTV.cs3",
@@ -436,7 +444,7 @@
     },
     {
         "iconUrl": "https://www.google.com/s2/favicons?domain=www.koreanturk.com&sz=%size%",
-        "fileHash": "sha256-a4ae9e1178514b2ab44b3635cd0bcdfdde6144f1723f67a1d8e6c16f19ea8494",
+        "fileHash": "sha256-f3e7d144e929bbb2e991ab6ec497fe19c8f7fed23fb1655ee771183b84eb3a0d",
         "apiVersion": 1,
         "repositoryUrl": "https://github.com/bilhan50/BilhanTR",
         "fileSize": 13117,
@@ -446,9 +454,10 @@
             "bilhan50"
         ],
         "tvTypes": [
-            "AsianDrama"
+            "AsianDrama",
+            "TvSeries"
         ],
-        "version": 6,
+        "version": 7,
         "internalName": "KoreanTurk",
         "description": "G\u00fcney Kore sevdal\u0131lar\u0131n\u0131n vazge\u00e7emedi\u011fi ve T\u00fcrkiye'nin en \u00e7ok ziyaret edilen G\u00fcney Kore Portal\u0131; Koreant\u00fcrk'e ho\u015fgeldiniz!",
         "url": "https://raw.githubusercontent.com/bilhan50/BilhanTR/builds/KoreanTurk.cs3",
@@ -711,7 +720,7 @@
     },
     {
         "iconUrl": "https://www.google.com/s2/favicons?domain=www.turkanime.tv&sz=%size%",
-        "fileHash": "sha256-329569a42a602634ab73faf3d74be402830b54fa3db79f20d44d442bbc6de233",
+        "fileHash": "sha256-e5b3fb5c5d7940b929d8262d96b8d4867b88577f6b857536e61003f62319cbc8",
         "apiVersion": 1,
         "repositoryUrl": "https://github.com/bilhan50/BilhanTR",
         "fileSize": 17576,
@@ -721,9 +730,11 @@
             "bilhan50"
         ],
         "tvTypes": [
-            "Anime"
+            "Anime",
+            "TvSeries",
+            "Movie"
         ],
-        "version": 3,
+        "version": 4,
         "internalName": "TurkAnime",
         "description": "T\u00fcrk Anime TV - T\u00fcrkiye'nin Online Anime izleme sitesi.",
         "url": "https://raw.githubusercontent.com/bilhan50/BilhanTR/builds/TurkAnime.cs3",
@@ -831,10 +842,10 @@
     },
     {
         "iconUrl": "https://www.google.com/s2/favicons?domain=youtube.com&sz=%size%",
-        "fileHash": "sha256-37baff4d27462670e69fd489c6067fd523aaa8d50529373198b4dada2acf5abd",
+        "fileHash": "sha256-0a0dd7bda77c83a4c0def56c5c31bc6662ef66e1655397235ef28ed504784e23",
         "apiVersion": 1,
         "repositoryUrl": "https://github.com/bilhan50/BilhanTR",
-        "fileSize": 16954,
+        "fileSize": 16955,
         "status": 1,
         "language": "tr",
         "authors": [
@@ -842,9 +853,11 @@
             "bilhan50"
         ],
         "tvTypes": [
-            "Others"
+            "Others",
+            "Movie",
+            "TvSeries"
         ],
-        "version": 5,
+        "version": 6,
         "internalName": "YouTube",
         "description": "YouTube, izledi\u011finiz videolarla \u00f6nerilerini iyile\u015ftirir. \u0130lginizi \u00e7ekebilecek i\u00e7eriklerle dolu bir ak\u0131\u015f olu\u015fturmak i\u00e7in video izlemeye ba\u015flay\u0131n.",
         "url": "https://raw.githubusercontent.com/bilhan50/BilhanTR/builds/YouTube.cs3",
