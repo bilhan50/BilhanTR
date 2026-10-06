@@ -1,4 +1,4 @@
-version = 5
+version = 6
 
 cloudstream {
     authors     = listOf("Cloudburst", "bilhan50")
@@ -13,6 +13,6 @@ cloudstream {
      * 3: Beta only
     **/
     status  = 1
-    tvTypes = listOf("Others")
+    tvTypes = listOf("Others", "Movie", "TvSeries")
     iconUrl = "https://www.google.com/s2/favicons?domain=youtube.com&sz=%size%"
 }

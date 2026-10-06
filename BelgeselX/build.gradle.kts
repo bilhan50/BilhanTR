@@ -1,4 +1,4 @@
-version = 5
+version = 6
 
 cloudstream {
     authors     = listOf("bilhan50", "JustRelaxable")
@@ -13,6 +13,6 @@ cloudstream {
      * 3: Beta only
     **/
     status  = 1 // will be 3 if unspecified
-    tvTypes = listOf("Documentary")
+    tvTypes = listOf("Documentary", "Movie")
     iconUrl = "https://www.google.com/s2/favicons?domain=belgeselx.com&sz=%size%"
 }

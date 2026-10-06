@@ -1,4 +1,4 @@
-version = 6
+version = 7
 
 cloudstream {
     authors     = listOf("bilhan50")
@@ -13,6 +13,6 @@ cloudstream {
      * 3: Beta only
     **/
     status  = 1 // will be 3 if unspecified
-    tvTypes = listOf("Cartoon")
+    tvTypes = listOf("Cartoon", "TvSeries", "Movie")
     iconUrl = "https://www.google.com/s2/favicons?domain=cizgimax.online&sz=%size%"
 }
