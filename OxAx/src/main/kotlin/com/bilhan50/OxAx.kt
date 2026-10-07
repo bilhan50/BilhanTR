@@ -10,7 +10,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 class OxAx : MainAPI() {
     override var mainUrl              = "https://ythls.BilhanTR.org/oxax/cs3"
     override var name                 = "OxAx"
-    override val hasMainPage          = true
+    override val hasMainPage          = false
     override var lang                 = "ru"
     override val hasQuickSearch       = true
     override val hasDownloadSupport   = false

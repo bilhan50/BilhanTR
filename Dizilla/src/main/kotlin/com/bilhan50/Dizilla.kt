@@ -11,7 +11,7 @@ import com.lagradost.cloudstream3.LoadResponse.Companion.addActors
 class Dizilla : MainAPI() {
     override var mainUrl              = "https://dizilla.nl"
     override var name                 = "Dizilla"
-    override val hasMainPage          = true
+    override val hasMainPage          = false
     override var lang                 = "tr"
     override val hasQuickSearch       = true
     override val supportedTypes       = setOf(TvType.TvSeries)

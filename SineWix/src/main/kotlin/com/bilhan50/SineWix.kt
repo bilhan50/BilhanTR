@@ -10,7 +10,7 @@ import com.lagradost.cloudstream3.LoadResponse.Companion.addActors
 class SineWix : MainAPI() {
     override var mainUrl              = "https://ythls.BilhanTR.org"
     override var name                 = "SineWix"
-    override val hasMainPage          = true
+    override val hasMainPage          = false
     override var lang                 = "tr"
     override val hasQuickSearch       = false
     override val supportedTypes       = setOf(TvType.Movie, TvType.TvSeries, TvType.Anime)

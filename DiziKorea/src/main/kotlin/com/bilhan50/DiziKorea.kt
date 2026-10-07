@@ -13,7 +13,7 @@ import org.jsoup.Jsoup
 class DiziKorea : MainAPI() {
     override var mainUrl              = "https://dizikorea.info"
     override var name                 = "DiziKorea"
-    override val hasMainPage          = true
+    override val hasMainPage          = false
     override var lang                 = "tr"
     override val hasQuickSearch       = true
     override val supportedTypes       = setOf(TvType.AsianDrama, TvType.TvSeries)
