@@ -111,11 +111,11 @@
     },
     {
         "iconUrl": "https://www.google.com/s2/favicons?domain=https://dizikorea.vip&sz=%size%",
-        "fileHash": "sha256-4861d61a530454dacb0f9082ffb00279275de4fd1feaf880baffa1fa04486ab8",
+        "fileHash": "sha256-1ef8ca25546b42174c9205e700c1750ea219cff1fd2d879f7f06d8883398abdc",
         "apiVersion": 1,
         "repositoryUrl": "https://github.com/bilhan50/BilhanTR",
-        "fileSize": 20987,
-        "status": 1,
+        "fileSize": 20993,
+        "status": 0,
         "language": "tr",
         "authors": [
             "bilhan50"
@@ -124,7 +124,7 @@
             "AsianDrama",
             "TvSeries"
         ],
-        "version": 6,
+        "version": 7,
         "internalName": "DiziKorea",
         "description": "En G\u00fcncel Kore Dizileri izleme Sitesi",
         "url": "https://raw.githubusercontent.com/bilhan50/BilhanTR/builds/DiziKorea.cs3",
@@ -132,11 +132,11 @@
     },
     {
         "iconUrl": "https://www.google.com/s2/favicons?domain=dizilla.club&sz=%size%",
-        "fileHash": "sha256-c16d119c004abd2c5c18c506f638a78922fa3b701798dfae400b0142956bacc5",
+        "fileHash": "sha256-fa875331b7ff8f8dff35f81ec48772eb447bd9aeb3f45006a75daeecb389da87",
         "apiVersion": 1,
         "repositoryUrl": "https://github.com/bilhan50/BilhanTR",
-        "fileSize": 27638,
-        "status": 1,
+        "fileSize": 27639,
+        "status": 0,
         "language": "tr",
         "authors": [
             "bilhan50"
@@ -144,7 +144,7 @@
         "tvTypes": [
             "TvSeries"
         ],
-        "version": 14,
+        "version": 15,
         "internalName": "Dizilla",
         "description": "Dizilla t\u00fcm yabanc\u0131 dizileri \u00fccretsiz olarak T\u00fcrk\u00e7e Dublaj ve altyaz\u0131l\u0131 se\u00e7enekleri ile 1080P kalite izleyebilece\u011finiz yeni nesil yabanc\u0131 dizi izleme siteniz.",
         "url": "https://raw.githubusercontent.com/bilhan50/BilhanTR/builds/Dizilla.cs3",
@@ -508,10 +508,10 @@
     },
     {
         "iconUrl": "https://cdn1.iconfinder.com/data/icons/nsfw-1/64/tv-adult-content-porn-512.png",
-        "fileHash": "sha256-759d020449cf9b1158d2f40db6f6e35deadd3b8ff7ff90daab60ea6bd45efb86",
+        "fileHash": "sha256-0e18b333ee13bf56394b618a19513815462aaefb59c38c173427e6534c2dc026",
         "apiVersion": 1,
         "repositoryUrl": "https://github.com/bilhan50/BilhanTR",
-        "fileSize": 14997,
+        "fileSize": 14995,
         "status": 0,
         "language": "ru",
         "authors": [
@@ -521,7 +521,7 @@
             "NSFW",
             "Live"
         ],
-        "version": 2,
+        "version": 3,
         "internalName": "OxAx",
         "description": "(VPN) \u041e\u0425-\u0410\u0425.\u0422\u0412 - \u0441\u0430\u0439\u0442 \u0434\u043b\u044f \u043f\u0440\u043e\u0441\u043c\u043e\u0442\u0440\u0430 \u0432\u0437\u0440\u043e\u0441\u043b\u044b\u0445 \u0422\u0412 \u043e\u043d\u043b\u0430\u0439\u043d \u0431\u0435\u0437 \u043a\u0430\u043a\u0438\u0445 \u043b\u0438\u0431\u043e \u0440\u0435\u0433\u0438\u0441\u0442\u0440\u0430\u0446\u0438\u0439. \u0421\u043c\u043e\u0442\u0440\u0438\u0442\u0435 \u0431\u0435\u0441\u043f\u043b\u0430\u0442\u043d\u043e \u043d\u0430 \u043c\u043e\u0431\u0438\u043b\u044c\u043d\u044b\u0445 \u0443\u0441\u0442\u0440\u043e\u0439\u0441\u0442\u0432\u0430\u0445 iPad, iPhone \u0438 Android.",
         "url": "https://raw.githubusercontent.com/bilhan50/BilhanTR/builds/OxAx.cs3",
@@ -594,11 +594,11 @@
     },
     {
         "iconUrl": "https://www.google.com/s2/favicons?domain=www.setfilmizle.de&sz=%size%",
-        "fileHash": "sha256-87bd68523927e124d805fc0ca7fe43f0101273b50aed7ee1a285665d249bc3c1",
+        "fileHash": "sha256-f5d76c8d5950d96673d6732bd19d34b630572e6e5935691db4428a036565d5ed",
         "apiVersion": 1,
         "repositoryUrl": "https://github.com/bilhan50/BilhanTR",
-        "fileSize": 24636,
-        "status": 1,
+        "fileSize": 24626,
+        "status": 0,
         "language": "tr",
         "authors": [
             "bilhan50"
@@ -607,7 +607,7 @@
             "Movie",
             "TvSeries"
         ],
-        "version": 9,
+        "version": 10,
         "internalName": "SetFilmIzle",
         "description": "Setfilmizle sitemizde, donma ya\u015famadan T\u00fcrk\u00e7e dublaj ve altyaz\u0131l\u0131 filmleri ile dizileri muhte\u015fem 1080p full HD kalitesinde izleyebilirsiniz.",
         "url": "https://raw.githubusercontent.com/bilhan50/BilhanTR/builds/SetFilmIzle.cs3",
@@ -656,10 +656,10 @@
     },
     {
         "iconUrl": "https://play-lh.googleusercontent.com/brwGNmr7IjA_MKk_TTPs0va10hdKE_bD_a1lnKoiMuCayW98EHpRv55edA6aEoJlmwfX",
-        "fileHash": "sha256-f1c38513f8cc0dba5968342031274f12fd127c66d4c3775e7ad52b5e928da7be",
+        "fileHash": "sha256-b07f36120b6bcc7b1b00801bd2e55d4ba563ad2dd93d2b780f208816bd41e179",
         "apiVersion": 1,
         "repositoryUrl": "https://github.com/bilhan50/BilhanTR",
-        "fileSize": 27616,
+        "fileSize": 27617,
         "status": 0,
         "language": "tr",
         "authors": [
@@ -671,7 +671,7 @@
             "TvSeries",
             "Anime"
         ],
-        "version": 12,
+        "version": 13,
         "internalName": "SineWix",
         "description": "Sinewix | \u00dccretsiz Film - Dizi - Anime \u0130zleme Uygulamas\u0131.",
         "url": "https://raw.githubusercontent.com/bilhan50/BilhanTR/builds/SineWix.cs3",
