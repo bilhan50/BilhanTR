@@ -10,7 +10,7 @@ import com.lagradost.cloudstream3.utils.*
 class RareFilmm : MainAPI() {
     override var mainUrl              = "https://rarefilmm.com"
     override var name                 = "RareFilmm"
-    override val hasMainPage          = true
+    override val hasMainPage          = false
     override var lang                 = "en"
     override val hasQuickSearch       = false
     override val supportedTypes       = setOf(TvType.Movie)

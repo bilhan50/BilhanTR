@@ -23,7 +23,7 @@ import com.lagradost.cloudstream3.utils.ExtractorLinkType
 class GolgeTV : MainAPI() {
     override var name = "GolgeTV"
     override var mainUrl = "https://panel.cloudgolge.shop/appMainGetData.php"
-    override val hasMainPage = true
+    override val hasMainPage = false
     override var lang = "tr"
     override val supportedTypes       = setOf(TvType.Live, TvType.TvSeries)
 

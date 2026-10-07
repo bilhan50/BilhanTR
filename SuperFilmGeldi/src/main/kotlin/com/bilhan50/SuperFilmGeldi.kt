@@ -11,7 +11,7 @@ import com.lagradost.cloudstream3.LoadResponse.Companion.addActors
 class SuperFilmGeldi : MainAPI() {
     override var mainUrl              = "https://www.superfilmgeldi.me"
     override var name                 = "SuperFilmGeldi"
-    override val hasMainPage          = true
+    override val hasMainPage          = false
     override var lang                 = "tr"
     override val hasQuickSearch       = false
     override val supportedTypes       = setOf(TvType.Movie)

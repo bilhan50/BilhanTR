@@ -1,4 +1,4 @@
-version = 9
+version = 10
 
 cloudstream {
     authors     = listOf("Horis, megix", "bilhan50")
@@ -12,7 +12,7 @@ cloudstream {
      * 2: Slow
      * 3: Beta only
     **/
-    status  = 1 // will be 3 if unspecified
+    status  = 0 // will be 3 if unspecified
     tvTypes = listOf("Movie", "TvSeries")
     iconUrl = "https://iosmirror.cc/img/nf2/icon_x192.png"
 }

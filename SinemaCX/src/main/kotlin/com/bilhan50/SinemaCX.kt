@@ -12,7 +12,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 class SinemaCX : MainAPI() {
     override var mainUrl              = "https://www.sinema.cx"
     override var name                 = "SinemaCX"
-    override val hasMainPage          = true
+    override val hasMainPage          = false
     override var lang                 = "tr"
     override val hasQuickSearch       = false
     override val supportedTypes       = setOf(TvType.Movie)

@@ -12,7 +12,7 @@ import okhttp3.Interceptor
 class RecTV : MainAPI() {
     override var mainUrl              = "https://b.prectv38.sbs"
     override var name                 = "RecTV"
-    override val hasMainPage          = true
+    override val hasMainPage          = false
     override var lang                 = "tr"
     override val hasQuickSearch       = false
     override val supportedTypes       = setOf(TvType.Movie, TvType.Live, TvType.TvSeries)

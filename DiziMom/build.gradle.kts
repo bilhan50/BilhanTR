@@ -1,4 +1,4 @@
-version = 10
+version = 11
 
 cloudstream {
     authors     = listOf("bilhan50")
@@ -12,7 +12,7 @@ cloudstream {
      * 2: Slow
      * 3: Beta only
     **/
-    status  = 1 // will be 3 if unspecified
+    status  = 0 // will be 3 if unspecified
     tvTypes = listOf("TvSeries")
     iconUrl = "https://www.google.com/s2/favicons?domain=www.dizimom.tv&sz=%size%"
 }

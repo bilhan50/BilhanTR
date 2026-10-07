@@ -12,7 +12,7 @@ import java.io.InputStream
 class CanliTV : MainAPI() {
     override var mainUrl              = "https://raw.githubusercontent.com/bilhan50/IPTV_YenirMi/main/Kanallar/BilhanTR.m3u"
     override var name                 = "CanliTV"
-    override val hasMainPage          = true
+    override val hasMainPage          = false
     override var lang                 = "tr"
     override val hasQuickSearch       = true
     override val hasDownloadSupport   = false

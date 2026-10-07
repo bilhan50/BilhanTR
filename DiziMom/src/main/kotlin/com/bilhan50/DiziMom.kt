@@ -11,7 +11,7 @@ import com.lagradost.cloudstream3.LoadResponse.Companion.addActors
 class DiziMom : MainAPI() {
     override var mainUrl              = "https://www.dizimom.plus"
     override var name                 = "DiziMom"
-    override val hasMainPage          = true
+    override val hasMainPage          = false
     override var lang                 = "tr"
     override val hasQuickSearch       = false
     override val supportedTypes       = setOf(TvType.TvSeries)

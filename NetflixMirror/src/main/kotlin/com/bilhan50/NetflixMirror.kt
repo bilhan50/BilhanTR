@@ -21,7 +21,7 @@ import com.lagradost.cloudstream3.utils.ExtractorLinkType
 class NetflixMirror : MainAPI() {
     override var mainUrl              = "https://iosmirror.cc"
     override var name                 = "NetflixMirror"
-    override val hasMainPage          = true
+    override val hasMainPage          = false
     override var lang                 = "hi"
     override val hasQuickSearch       = false
     override val supportedTypes       = setOf(TvType.Movie, TvType.TvSeries)

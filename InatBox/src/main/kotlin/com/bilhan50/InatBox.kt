@@ -19,7 +19,7 @@ class InatBox : MainAPI() {
     private val contentUrl  = "https://dizibox.rest"
 
     override var name                 = "InatBox"
-    override val hasMainPage          = true
+    override val hasMainPage          = false
     override var lang                 = "tr"
     override val hasQuickSearch       = true
     override val supportedTypes       = setOf(TvType.Movie, TvType.TvSeries, TvType.Live)

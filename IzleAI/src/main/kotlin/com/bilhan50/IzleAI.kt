@@ -12,7 +12,7 @@ import com.lagradost.cloudstream3.LoadResponse.Companion.addTrailer
 class IzleAI : MainAPI() {
     override var mainUrl              = "https://selcukflix.com"
     override var name                 = "720PizleAI"
-    override val hasMainPage          = true
+    override val hasMainPage          = false
     override var lang                 = "tr"
     override val hasQuickSearch       = true
     override val supportedTypes       = setOf(TvType.Movie)

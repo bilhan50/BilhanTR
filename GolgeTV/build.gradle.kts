@@ -1,4 +1,4 @@
-version = 6
+version = 7
 
 cloudstream {
     authors     = listOf("usdogu", "bilhan50")
@@ -12,7 +12,7 @@ cloudstream {
      * 2: Slow
      * 3: Beta only
     **/
-    status  = 3 // will be 3 if unspecified
+    status  = 0 // will be 3 if unspecified
     tvTypes = listOf("Live", "TvSeries")
     iconUrl = "https://www.apkdelisi.net/wp-content/uploads/2022/03/golge-tv-reklamsiz-mod-apk-canli-tv-apkdelisi-0.jpg"
 }

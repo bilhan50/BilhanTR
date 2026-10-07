@@ -12,7 +12,7 @@ import com.lagradost.cloudstream3.LoadResponse.Companion.addTrailer
 class Watch2Movies : MainAPI() {
     override var mainUrl              = "https://watch2movies.net"
     override var name                 = "Watch2Movies"
-    override val hasMainPage          = true
+    override val hasMainPage          = false
     override var lang                 = "en"
     override val hasQuickSearch       = false
     override val supportedTypes       = setOf(TvType.Movie)
