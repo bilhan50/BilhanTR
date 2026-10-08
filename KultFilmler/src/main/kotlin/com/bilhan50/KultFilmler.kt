@@ -201,6 +201,8 @@ class KultFilmler : MainAPI() {
                     ) {
                         this.referer = "https://vidmoly.to/"
                         this.quality = Qualities.Unknown.value
+                        // * vidmoly hls verir, adreste uzanti yok
+                        this.type    = ExtractorLinkType.M3U8
                     }
                 )
             } else {

@@ -61,6 +61,8 @@ open class TRsTX : ExtractorApi() {
                 ) {
                     this.referer = extRef
                     this.quality = Qualities.Unknown.value
+                    // * videoData bir m3u8 akisi, adreste uzanti yok
+                    this.type    = ExtractorLinkType.M3U8
                 }
             )
         }

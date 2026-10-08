@@ -192,6 +192,9 @@ class FilmModu : MainAPI() {
                     ) {
                         this.referer = "${mainUrl}/"
                         this.quality = getQualityFromName(source.label)
+                        // * get-source yaniti application/x-mpegURL dondurur, adreste uzanti yok;
+                        // * tip VIDEO olarak yanlis cikarsa oynatma patlar
+                        this.type    = ExtractorLinkType.M3U8
                     }
                 )
             }

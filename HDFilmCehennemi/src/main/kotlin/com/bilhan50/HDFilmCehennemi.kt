@@ -163,27 +163,174 @@ class HDFilmCehennemi : MainAPI() {
     }
 
     private suspend fun invokeLocalSource(source: String, url: String, subtitleCallback: (SubtitleFile) -> Unit, callback: (ExtractorLink) -> Unit ) {
-        val script    = app.get(url, referer = "${mainUrl}/", interceptor = interceptor).document.select("script").find { it.data().contains("sources:") }?.data() ?: return
-        val videoData = getAndUnpack(script).substringAfter("file_link=\"").substringBefore("\";")
-        val subData   = script.substringAfter("tracks: [").substringBefore("]")
+        val doc    = app.get(url, referer = "${mainUrl}/", interceptor = interceptor).document
+        val script = doc.select("script").map { it.data() }
+            .filter { it.contains("sources:") || it.contains("tracks: [") }
+        if (script.isEmpty()) return
+
+        val videoData = script.firstNotNullOfOrNull { extractStreamUrl(it) } ?: run {
+            Log.d("HDCH", "stream cozulemedi » $url")
+            return
+        }
+        val subData = script.firstOrNull { it.contains("tracks: [") }
+            ?.substringAfter("tracks: [")?.substringBefore("]")
 
         callback.invoke(
             newExtractorLink(
                 source = source,
                 name = source,
-                url = base64Decode(videoData)
+                url = videoData
             ) {
                 this.referer = "${mainUrl}/"
                 this.quality = Qualities.Unknown.value
-                // isM3u8  = true
+                this.type    = ExtractorLinkType.M3U8
             }
         )
 
-        AppUtils.tryParseJson<List<SubSource>>("[${subData}]")?.filter { it.kind == "captions" }?.map {
-            subtitleCallback.invoke(
-                SubtitleFile(it.label.toString(), fixUrl(it.file.toString()))
-            )
+        if (!subData.isNullOrBlank()) {
+            AppUtils.tryParseJson<List<SubSource>>("[${subData}]")?.filter { it.kind == "captions" }?.map {
+                subtitleCallback.invoke(
+                    SubtitleFile(it.label.toString(), fixUrl(it.file.toString()))
+                )
+            }
         }
+    }
+
+    /** Base64 cozup latin1 metin olarak dondurur; cozulemezse bos string. */
+    private fun decodeBase64Latin1(str: String): String {
+        val pad = (4 - str.length % 4) % 4
+        return try {
+            String(
+                android.util.Base64.decode(str + "=".repeat(pad), android.util.Base64.DEFAULT),
+                Charsets.ISO_8859_1
+            )
+        } catch (_: Throwable) {
+            ""
+        }
+    }
+
+    /**
+     * Sitenin su anki video sifrelemesi: parca listesinden iki anahtari ayirir,
+     * ROT / ters cevir / base64 adimlarini uygular, Fisher-Yates karistirir ve
+     * XOR ile gercek .m3u8 adresini cikarir.
+     */
+    private fun decodePayload(parts: List<String>): String {
+        val list  = parts.toMutableList()
+        val aik4z = list.size - 2
+        if (aik4z < 0) return ""
+        val ozqzr = aik4z % 7
+        val ft0q0 = 8 + (aik4z % 5)
+        if (ft0q0 >= list.size || ozqzr >= list.size) return ""
+
+        val t2o  = list.removeAt(ft0q0)
+        val xtqz = list.removeAt(ozqzr)
+        var uvhq = list.joinToString("")
+
+        if (xtqz.length > 4096) uvhq = decodeBase64Latin1(uvhq)
+
+        var xbgh9 = 0
+        var hqbz  = 0
+        for (i in xtqz.indices) {
+            val xu25 = xtqz[i].code
+            xbgh9 = (xbgh9 * 37 + xu25) % 241
+            hqbz  = (hqbz + ((xu25 shl 1) xor i)) and 255
+        }
+
+        val mlr3o = (xbgh9 * 3 + hqbz) % 256
+        val gjy   = (hqbz % 11) + 5
+        var euerq = ((hqbz * 251 + xbgh9) % 65519) + 1
+
+        for (i in t2o.length - 1 downTo 0) {
+            val cmd = t2o[i]
+            when (cmd) {
+                '7' -> uvhq = decodeBase64Latin1(uvhq)
+                '3' -> uvhq = uvhq.reversed()
+                else -> {
+                    val rot = (26 - ((cmd.code - 96) % 26)) % 26
+                    val sb  = StringBuilder(uvhq.length)
+                    for (ch in uvhq) {
+                        val c = ch.code
+                        sb.append(
+                            when {
+                                ch in 'A'..'Z' -> ((c - 65 + rot) % 26 + 65).toChar()
+                                ch in 'a'..'z' -> ((c - 97 + rot) % 26 + 97).toChar()
+                                else           -> ch
+                            }
+                        )
+                    }
+                    uvhq = sb.toString()
+                }
+            }
+        }
+
+        if (t2o.length > 2048) uvhq = uvhq.reversed()
+
+        val finalLen = uvhq.length
+        val gm7n = IntArray(finalLen)
+        for (i in finalLen - 1 downTo 1) {
+            euerq  = (euerq * 97 + 41) % 65519
+            gm7n[i] = euerq % (i + 1)
+        }
+
+        val dowxc = uvhq.toCharArray()
+        for (i in 1 until finalLen) {
+            val w   = gm7n[i]
+            val tmp = dowxc[i]
+            dowxc[i] = dowxc[w]
+            dowxc[w] = tmp
+        }
+        uvhq = String(dowxc)
+
+        var uo2b0 = mlr3o
+        val julf  = StringBuilder(uvhq.length)
+        for (ch in uvhq) {
+            val xu25 = ch.code
+            uo2b0 = (uo2b0 * 5 + gjy) % 256
+            julf.append((xu25 xor uo2b0).toChar())
+            uo2b0 = (uo2b0 + xu25) % 256
+        }
+        return julf.toString()
+    }
+
+    /** Sayfadaki gizli video adresini cozer; bulamazsa null dondurur. */
+    private fun extractStreamUrl(html: String): String? {
+        if (html.isBlank()) return null
+
+        // 1) dogrudan yazilmis dosya adresi
+        Regex("""file:\s*["']([^"']+\.(?:m3u8|mp4|txt)[^"']*)["']""")
+            .find(html)?.groupValues?.get(1)?.takeIf { it.isNotBlank() }?.let { return it }
+
+        // 2) Dean Edwards ile paketlenmis kodu coz; her iki yolu da dene
+        val variants = LinkedHashSet<String>()
+        variants.add(html)
+        listOf(getAndUnpack(html), runCatching { JsUnpacker(html).unpack() }.getOrNull()).forEach { u ->
+            if (!u.isNullOrBlank()) variants.add(html + "\n" + u)
+        }
+
+        for (full in variants) {
+            // 3) sources: [{file: <degisken>}]
+            val varName = Regex("""sources:\s*\[\{file:\s*([a-zA-Z0-9_]+)""")
+                .findAll(full).map { it.groupValues[1] }.firstOrNull { it != "atob" } ?: continue
+
+            // 4) var <degisken> = func("...".split("..."));
+            Regex("""var\s+$varName\s*=\s*[a-zA-Z0-9_]+\s*\(\s*["']([^"']+)["']\.split\(\s*["']([^"']+)["']\s*\)\s*\);""")
+                .find(full)?.let { m ->
+                    val decoded = decodePayload(m.groupValues[1].split(m.groupValues[2]))
+                    if (decoded.startsWith("http")) return decoded
+                }
+
+            // 5) jenerik tarama
+            Regex("""var\s+[a-zA-Z0-9_]+\s*=\s*[a-zA-Z0-9_]+\s*\(\s*["']([^"']{100,})["']\.split\(\s*["']([|\^*@#~])["']\s*\)\s*\);""")
+                .findAll(full).forEach { m ->
+                    val parts = m.groupValues[1].split(m.groupValues[2])
+                    if (parts.size >= 10) {
+                        val decoded = decodePayload(parts)
+                        if (decoded.startsWith("http")) return decoded
+                    }
+                }
+        }
+
+        return null
     }
 
     override suspend fun loadLinks(data: String, isCasting: Boolean, subtitleCallback: (SubtitleFile) -> Unit, callback: (ExtractorLink) -> Unit ): Boolean {

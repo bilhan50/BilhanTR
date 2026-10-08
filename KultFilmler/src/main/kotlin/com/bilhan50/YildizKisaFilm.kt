@@ -46,6 +46,8 @@ open class YildizKisaFilm : ExtractorApi() {
             ) {
                 this.referer = extRef
                 this.quality = Qualities.Unknown.value
+                // * yanit nesnesinde "hls" alani var -> HLS akisi, adreste uzanti yok
+                this.type    = ExtractorLinkType.M3U8
             }
         )
     }
