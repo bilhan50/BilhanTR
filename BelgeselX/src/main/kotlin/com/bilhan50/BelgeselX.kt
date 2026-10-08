@@ -7,8 +7,28 @@ import android.util.Log
 import org.jsoup.nodes.Element
 import com.lagradost.cloudstream3.*
 import com.lagradost.cloudstream3.utils.*
+import com.lagradost.cloudstream3.network.CloudflareKiller
+import okhttp3.Interceptor
+import okhttp3.Response
+import org.jsoup.Jsoup
 
 class BelgeselX : MainAPI() {
+    // ! CloudFlare bot korumasini asma
+    private val cloudflareKiller by lazy { CloudflareKiller() }
+    private val interceptor      by lazy { CloudflareInterceptor(cloudflareKiller) }
+
+    class CloudflareInterceptor(private val cloudflareKiller: CloudflareKiller): Interceptor {
+        override fun intercept(chain: Interceptor.Chain): Response {
+            val response = chain.proceed(chain.request())
+            val doc      = Jsoup.parse(response.peekBody(1024 * 1024).string())
+
+            if (doc.text().contains("Just a moment")) {
+                return cloudflareKiller.intercept(chain)
+            }
+
+            return response
+        }
+    }
     override var mainUrl              = "https://belgeselx.com"
     override var name                 = "BelgeselX"
     override val hasMainPage          = true
@@ -39,7 +59,7 @@ class BelgeselX : MainAPI() {
     )
 
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
-        val document = app.get("${request.data}${page}").document
+        val document = app.get("${request.data}${page}", interceptor = interceptor).document
         val home     = document.select("div.gen-movie-contain").mapNotNull { it.toSearchResult() }
 
         return newHomePageResponse(request.name, home)
@@ -63,11 +83,11 @@ class BelgeselX : MainAPI() {
     override suspend fun search(query: String): List<SearchResponse> {
         val cx = "016376594590146270301:iwmy65ijgrm" // ! Might change in the future
 
-        val tokenResponse = app.get("https://cse.google.com/cse.js?cx=${cx}")
+        val tokenResponse = app.get("https://cse.google.com/cse.js?cx=${cx}", interceptor = interceptor)
         val cseLibVersion = Regex("""cselibVersion": "(.*)"""").find(tokenResponse.text)?.groupValues?.get(1)
         val cseToken      = Regex("""cse_token": "(.*)"""").find(tokenResponse.text)?.groupValues?.get(1)
 
-        val response = app.get("https://cse.google.com/cse/element/v1?rsz=filtered_cse&num=100&hl=tr&source=gcsc&cselibv=${cseLibVersion}&cx=${cx}&q=${query}&safe=off&cse_tok=${cseToken}&oq=${query}&callback=google.search.cse.api9969&rurl=https%3A%2F%2Fbelgeselx.com%2F")
+        val response = app.get("https://cse.google.com/cse/element/v1?rsz=filtered_cse&num=100&hl=tr&source=gcsc&cselibv=${cseLibVersion}&cx=${cx}&q=${query}&safe=off&cse_tok=${cseToken}&oq=${query}&callback=google.search.cse.api9969&rurl=https%3A%2F%2Fbelgeselx.com%2F", interceptor = interceptor)
         Log.d("BLX","Search result: ${response.text}")
 
         val titles     = Regex(""""titleNoFormatting": "(.*)"""").findAll(response.text).map { it.groupValues[1] }.toList()
@@ -93,7 +113,7 @@ class BelgeselX : MainAPI() {
     override suspend fun quickSearch(query: String): List<SearchResponse> = search(query)
 
     override suspend fun load(url: String): LoadResponse? {
-        val document = app.get(url).document
+        val document = app.get(url, interceptor = interceptor).document
 
         val title       = document.selectFirst("h2.gen-title")?.text()?.trim()?.toTitleCase() ?: return null
         val poster      = fixUrlNull(document.selectFirst("div.gen-tv-show-top img")?.attr("src")) ?: return null
@@ -129,12 +149,12 @@ class BelgeselX : MainAPI() {
 
     override suspend fun loadLinks(data: String, isCasting: Boolean, subtitleCallback: (SubtitleFile) -> Unit, callback: (ExtractorLink) -> Unit): Boolean {
         Log.d("BLX", "data » $data")
-        val source = app.get(data)
+        val source = app.get(data, interceptor = interceptor)
 
         Regex("""<iframe\s+[^>]*src=\\"([^\\"']+)\\"""").findAll(source.text).forEach { alternatifUrlMatchResult ->
             val alternatifUrl  = alternatifUrlMatchResult.groupValues[1]
             Log.d("BLX", "alternatifUrl » $alternatifUrl")
-            val alternatifResp = app.get(alternatifUrl, referer=data)
+            val alternatifResp = app.get(alternatifUrl, referer=data, interceptor = interceptor)
 
             if (alternatifUrl.contains("new4.php")) {
                 Regex("""file:"([^"]+)", label: "([^"]+)""").findAll(alternatifResp.text).forEach {

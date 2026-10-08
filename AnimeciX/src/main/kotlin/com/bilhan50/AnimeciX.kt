@@ -7,8 +7,28 @@ import com.lagradost.cloudstream3.*
 import com.lagradost.cloudstream3.utils.*
 import com.lagradost.cloudstream3.LoadResponse.Companion.addActors
 import com.lagradost.cloudstream3.LoadResponse.Companion.addTrailer
+import com.lagradost.cloudstream3.network.CloudflareKiller
+import okhttp3.Interceptor
+import okhttp3.Response
+import org.jsoup.Jsoup
 
 class AnimeciX : MainAPI() {
+    // ! CloudFlare bot korumasini asma
+    private val cloudflareKiller by lazy { CloudflareKiller() }
+    private val interceptor      by lazy { CloudflareInterceptor(cloudflareKiller) }
+
+    class CloudflareInterceptor(private val cloudflareKiller: CloudflareKiller): Interceptor {
+        override fun intercept(chain: Interceptor.Chain): Response {
+            val response = chain.proceed(chain.request())
+            val doc      = Jsoup.parse(response.peekBody(1024 * 1024).string())
+
+            if (doc.text().contains("Just a moment")) {
+                return cloudflareKiller.intercept(chain)
+            }
+
+            return response
+        }
+    }
     override var mainUrl              = "https://animecix.tv"
     override var name                 = "AnimeciX"
     override val hasMainPage          = true
@@ -30,7 +50,7 @@ class AnimeciX : MainAPI() {
             "${request.data}&page=${page}&perPage=16",
             headers = mapOf(
                 "x-e-h" to "7Y2ozlO+QysR5w9Q6Tupmtvl9jJp7ThFH8SB+Lo7NvZjgjqRSqOgcT2v4ISM9sP10LmnlYI8WQ==.xrlyOBFS5BHjQ2Lk"
-            )
+            ), interceptor = interceptor
         ).parsedSafe<Category>()
 
         val home     = response?.pagination?.data?.map { anime ->
@@ -47,7 +67,7 @@ class AnimeciX : MainAPI() {
     }
 
     override suspend fun search(query: String): List<SearchResponse> {
-        val response = app.get("${mainUrl}/secure/search/${query}?limit=20").parsedSafe<Search>() ?: return listOf()
+        val response = app.get("${mainUrl}/secure/search/${query}?limit=20", interceptor = interceptor).parsedSafe<Search>() ?: return listOf()
 
         return response.results.map { anime ->
             newAnimeSearchResponse(
@@ -67,14 +87,14 @@ class AnimeciX : MainAPI() {
             url,
             headers = mapOf(
                 "x-e-h" to "7Y2ozlO+QysR5w9Q6Tupmtvl9jJp7ThFH8SB+Lo7NvZjgjqRSqOgcT2v4ISM9sP10LmnlYI8WQ==.xrlyOBFS5BHjQ2Lk"
-            )
+            ), interceptor = interceptor
         ).parsedSafe<Title>() ?: return null
         val episodes = mutableListOf<Episode>()
         val titleId  = url.substringAfter("?titleId=")
 
         if (response.title.titleType == "anime") {
             for (sezon in response.title.seasons) {
-                val sezonResponse = app.get("${mainUrl}/secure/related-videos?episode=1&season=${sezon.number}&videoId=0&titleId=${titleId}").parsedSafe<TitleVideos>() ?: return null
+                val sezonResponse = app.get("${mainUrl}/secure/related-videos?episode=1&season=${sezon.number}&videoId=0&titleId=${titleId}", interceptor = interceptor).parsedSafe<TitleVideos>() ?: return null
                 for (video in sezonResponse.videos) {
                     episodes.add(newEpisode(video.url) {
                         this.name = "${video.seasonNum}. Sezon ${video.episodeNum}. Bölüm"
@@ -112,7 +132,7 @@ class AnimeciX : MainAPI() {
 
     override suspend fun loadLinks(data: String, isCasting: Boolean, subtitleCallback: (SubtitleFile) -> Unit, callback: (ExtractorLink) -> Unit): Boolean {
         Log.d("ACX", "data » $data")
-        val iframeLink = app.get("${mainUrl}/${data}", referer="${mainUrl}/").url
+        val iframeLink = app.get("${mainUrl}/${data}", referer="${mainUrl}/", interceptor = interceptor).url
         Log.d("ACX", "iframeLink » $iframeLink")
 
         loadExtractor(iframeLink, "${mainUrl}/", subtitleCallback, callback)

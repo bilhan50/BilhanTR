@@ -9,8 +9,28 @@ import com.lagradost.cloudstream3.*
 import com.lagradost.cloudstream3.utils.*
 import android.util.Base64
 import com.lagradost.cloudstream3.extractors.helper.AesHelper
+import com.lagradost.cloudstream3.network.CloudflareKiller
+import okhttp3.Interceptor
+import okhttp3.Response
+import org.jsoup.Jsoup
 
 class TurkAnime : MainAPI() {
+    // ! CloudFlare bot korumasini asma
+    private val cloudflareKiller by lazy { CloudflareKiller() }
+    private val interceptor      by lazy { CloudflareInterceptor(cloudflareKiller) }
+
+    class CloudflareInterceptor(private val cloudflareKiller: CloudflareKiller): Interceptor {
+        override fun intercept(chain: Interceptor.Chain): Response {
+            val response = chain.proceed(chain.request())
+            val doc      = Jsoup.parse(response.peekBody(1024 * 1024).string())
+
+            if (doc.text().contains("Just a moment")) {
+                return cloudflareKiller.intercept(chain)
+            }
+
+            return response
+        }
+    }
     override var mainUrl              = "https://www.turkanime.tv"
     override var name                 = "TurkAnime"
     override val hasMainPage          = true
@@ -64,7 +84,7 @@ class TurkAnime : MainAPI() {
     )
 
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
-        val document = app.get(request.data).document
+        val document = app.get(request.data, interceptor = interceptor).document
         val home     = document.select("div#orta-icerik div.panel").mapNotNull { it.toMainPageResult() }
 
         return newHomePageResponse(request.name, home)
@@ -79,7 +99,7 @@ class TurkAnime : MainAPI() {
     }
 
     override suspend fun search(query: String): List<SearchResponse> {
-        val document = app.post("${mainUrl}/arama", data=mapOf("arama" to query)).document
+        val document = app.post("${mainUrl}/arama", data=mapOf("arama" to query), interceptor = interceptor).document
 
         return document.select("div#orta-icerik div.panel").mapNotNull { it.toMainPageResult() }
     }
@@ -87,7 +107,7 @@ class TurkAnime : MainAPI() {
     override suspend fun quickSearch(query: String): List<SearchResponse> = search(query)
 
     override suspend fun load(url: String): LoadResponse? {
-        val document = app.get(url).document
+        val document = app.get(url, interceptor = interceptor).document
 
         val title       = document.selectFirst("div#detayPaylas div.panel-title")?.text()?.trim() ?: return null
         val poster      = fixUrlNull(document.selectFirst("div#detayPaylas div.imaj img")?.attr("data-src"))
@@ -103,7 +123,7 @@ class TurkAnime : MainAPI() {
                 "X-Requested-With" to "XMLHttpRequest",
                 "token"            to document.selectFirst("meta[name='_token']")!!.attr("content")
             ),
-            cookies = mapOf("yasOnay" to "1")
+            cookies = mapOf("yasOnay" to "1"), interceptor = interceptor
         ).document
 
         val episodes = bolumlerDoc.select("div#bolum-list li").mapNotNull {
@@ -158,7 +178,7 @@ class TurkAnime : MainAPI() {
         //         ),
         //         referer = mainVideo,
         //         cookies = mapOf("yasOnay" to "1")
-        //     ).text
+        //, interceptor = interceptor     ).text
 
         //     val m3uLink = fixUrlNull(Regex("""file\":\"([^\"]+)""").find(mainAPI)?.groupValues?.get(1)?.replace("\\", ""))
         //     Log.d("TRANM", "m3uLink » ${m3uLink}")
@@ -180,7 +200,7 @@ class TurkAnime : MainAPI() {
         for (button in document.select("button[onclick*='ajax/videosec']")) {
             val butonLink = fixUrlNull(button.attr("onclick").substringAfter("IndexIcerik('").substringBefore("'")) ?: continue
             val butonName = button.ownText().trim()
-            val subDoc    = app.get(butonLink, headers=mapOf("X-Requested-With" to "XMLHttpRequest")).document
+            val subDoc    = app.get(butonLink, headers=mapOf("X-Requested-With" to "XMLHttpRequest"), interceptor = interceptor).document
 
             val subFrame  = fixUrlNull(subDoc.selectFirst("iframe")?.attr("src")) ?: continue
             val subLink   = iframe2AesLink(subFrame) ?: continue
@@ -192,13 +212,13 @@ class TurkAnime : MainAPI() {
 
     override suspend fun loadLinks(data: String, isCasting: Boolean, subtitleCallback: (SubtitleFile) -> Unit, callback: (ExtractorLink) -> Unit): Boolean {
         Log.d("TRANM", "data » $data")
-        val document  = app.get(data).document
+        val document  = app.get(data, interceptor = interceptor).document
         val iframe    = fixUrlNull(document.selectFirst("iframe")?.attr("src")) ?: return false
 
         if (iframe.contains("a-ads.com")) {
             for (button in document.select("button[onclick*='ajax/videosec']")) {
                 val butonLink = fixUrlNull(button.attr("onclick").substringAfter("IndexIcerik('").substringBefore("'")) ?: continue
-                val subDoc    = app.get(butonLink, headers=mapOf("X-Requested-With" to "XMLHttpRequest")).document
+                val subDoc    = app.get(butonLink, headers=mapOf("X-Requested-With" to "XMLHttpRequest"), interceptor = interceptor).document
 
                 val subFrame  = fixUrlNull(subDoc.selectFirst("iframe")?.attr("src")) ?: continue
                 iframe2Load(subDoc, subFrame, subtitleCallback, callback)

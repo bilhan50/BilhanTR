@@ -6,8 +6,28 @@ import com.lagradost.cloudstream3.*
 import com.lagradost.cloudstream3.utils.*
 import com.lagradost.cloudstream3.utils.AppUtils.tryParseJson
 import com.lagradost.cloudstream3.utils.StringUtils.encodeUri
+import com.lagradost.cloudstream3.network.CloudflareKiller
+import okhttp3.Interceptor
+import okhttp3.Response
+import org.jsoup.Jsoup
 
 class YouTube : MainAPI() {
+    // ! CloudFlare bot korumasini asma
+    private val cloudflareKiller by lazy { CloudflareKiller() }
+    private val interceptor      by lazy { CloudflareInterceptor(cloudflareKiller) }
+
+    class CloudflareInterceptor(private val cloudflareKiller: CloudflareKiller): Interceptor {
+        override fun intercept(chain: Interceptor.Chain): Response {
+            val response = chain.proceed(chain.request())
+            val doc      = Jsoup.parse(response.peekBody(1024 * 1024).string())
+
+            if (doc.text().contains("Just a moment")) {
+                return cloudflareKiller.intercept(chain)
+            }
+
+            return response
+        }
+    }
     override var mainUrl              = "https://inv.nadeko.net"
     override var name                 = "YouTube"
     override val hasMainPage          = true
@@ -18,16 +38,16 @@ class YouTube : MainAPI() {
 
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
         val trending = tryParseJson<List<SearchEntry>>(
-            app.get("${mainUrl}/api/v1/trending?region=${lang.uppercase()}&type=news&fields=videoId,title").text
+            app.get("${mainUrl}/api/v1/trending?region=${lang.uppercase()}&type=news&fields=videoId,title", interceptor = interceptor).text
         )
         val music = tryParseJson<List<SearchEntry>>(
-            app.get("${mainUrl}/api/v1/trending?region=${lang.uppercase()}&type=music&fields=videoId,title").text
+            app.get("${mainUrl}/api/v1/trending?region=${lang.uppercase()}&type=music&fields=videoId,title", interceptor = interceptor).text
         )
         val movies = tryParseJson<List<SearchEntry>>(
-            app.get("${mainUrl}/api/v1/trending?region=${lang.uppercase()}&type=movies&fields=videoId,title").text
+            app.get("${mainUrl}/api/v1/trending?region=${lang.uppercase()}&type=movies&fields=videoId,title", interceptor = interceptor).text
         )
         val gaming = tryParseJson<List<SearchEntry>>(
-            app.get("${mainUrl}/api/v1/trending?region=${lang.uppercase()}&type=gaming&fields=videoId,title").text
+            app.get("${mainUrl}/api/v1/trending?region=${lang.uppercase()}&type=gaming&fields=videoId,title", interceptor = interceptor).text
         )
 
         return newHomePageResponse(
@@ -60,7 +80,7 @@ class YouTube : MainAPI() {
     // this function gets called when you search for something
     override suspend fun search(query: String): List<SearchResponse> {
         val res = tryParseJson<List<SearchEntry>>(
-            app.get("${mainUrl}/api/v1/search?q=${query.encodeUri()}&region=${lang.uppercase()}&page=1&type=video&fields=videoId,title").text
+            app.get("${mainUrl}/api/v1/search?q=${query.encodeUri()}&region=${lang.uppercase()}&page=1&type=video&fields=videoId,title", interceptor = interceptor).text
         )
         return res?.map { it.toSearchResponse(this) } ?: emptyList()
     }
@@ -68,7 +88,7 @@ class YouTube : MainAPI() {
     override suspend fun load(url: String): LoadResponse? {
         val videoId = Regex("watch\\?v=([a-zA-Z0-9_-]+)").find(url)?.groupValues?.get(1)
         val res     = tryParseJson<VideoEntry>(
-            app.get("${mainUrl}/api/v1/videos/${videoId}?region=${lang.uppercase()}&fields=videoId,title,description,recommendedVideos,author,authorThumbnails,formatStreams").text
+            app.get("${mainUrl}/api/v1/videos/${videoId}?region=${lang.uppercase()}&fields=videoId,title,description,recommendedVideos,author,authorThumbnails,formatStreams", interceptor = interceptor).text
         )
         return res?.toLoadResponse(this)
     }

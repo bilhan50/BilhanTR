@@ -8,8 +8,28 @@ import com.lagradost.cloudstream3.*
 import com.lagradost.cloudstream3.utils.*
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
+import com.lagradost.cloudstream3.network.CloudflareKiller
+import okhttp3.Interceptor
+import okhttp3.Response
+import org.jsoup.Jsoup
 
 class DiziPal : MainAPI() {
+    // ! CloudFlare bot korumasini asma
+    private val cloudflareKiller by lazy { CloudflareKiller() }
+    private val interceptor      by lazy { CloudflareInterceptor(cloudflareKiller) }
+
+    class CloudflareInterceptor(private val cloudflareKiller: CloudflareKiller): Interceptor {
+        override fun intercept(chain: Interceptor.Chain): Response {
+            val response = chain.proceed(chain.request())
+            val doc      = Jsoup.parse(response.peekBody(1024 * 1024).string())
+
+            if (doc.text().contains("Just a moment")) {
+                return cloudflareKiller.intercept(chain)
+            }
+
+            return response
+        }
+    }
     override var mainUrl              = "https://dizipal2135.com"
     override var name                 = "DiziPal"
     override val hasMainPage          = true
@@ -66,7 +86,7 @@ class DiziPal : MainAPI() {
 
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
         val document = app.get(
-            request.data,
+            request.data, interceptor = interceptor
         ).document
         val home     = if (request.data.contains("/diziler/son-bolumler")) {
             document.select("div.episode-item").mapNotNull { it.sonBolumler() } 
@@ -120,7 +140,7 @@ class DiziPal : MainAPI() {
             referer     = "${mainUrl}/",
             data        = mapOf(
                 "query" to query
-            )
+            ), interceptor = interceptor
         )
 
         val searchItemsMap = jacksonObjectMapper().readValue<Map<String, SearchItem>>(responseRaw.text)
@@ -137,7 +157,7 @@ class DiziPal : MainAPI() {
     override suspend fun quickSearch(query: String): List<SearchResponse> = search(query)
 
     override suspend fun load(url: String): LoadResponse? {
-        val document = app.get(url).document
+        val document = app.get(url, interceptor = interceptor).document
 
         val poster      = fixUrlNull(document.selectFirst("[property='og:image']")?.attr("content"))
         val year        = document.selectXpath("//div[text()='Yapım Yılı']//following-sibling::div").text().trim().toIntOrNull()
@@ -186,11 +206,11 @@ class DiziPal : MainAPI() {
 
     override suspend fun loadLinks(data: String, isCasting: Boolean, subtitleCallback: (SubtitleFile) -> Unit, callback: (ExtractorLink) -> Unit): Boolean {
         Log.d("DZP", "data » $data")
-        val document = app.get(data).document
+        val document = app.get(data, interceptor = interceptor).document
         val iframe   = document.selectFirst(".series-player-container iframe")?.attr("src") ?: document.selectFirst("div#vast_new iframe")?.attr("src") ?: return false
         Log.d("DZP", "iframe » $iframe")
 
-        val iSource = app.get(iframe, referer="${mainUrl}/").text
+        val iSource = app.get(iframe, referer="${mainUrl}/", interceptor = interceptor).text
         val m3uLink = Regex("""file:"([^"]+)""").find(iSource)?.groupValues?.get(1)
         if (m3uLink == null) {
             Log.d("DZP", "iSource » $iSource")

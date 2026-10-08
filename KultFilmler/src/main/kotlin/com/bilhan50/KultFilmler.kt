@@ -9,8 +9,27 @@ import com.lagradost.cloudstream3.utils.*
 import com.lagradost.cloudstream3.LoadResponse.Companion.addActors
 import android.util.Base64
 import org.jsoup.Jsoup
+import com.lagradost.cloudstream3.network.CloudflareKiller
+import okhttp3.Interceptor
+import okhttp3.Response
 
 class KultFilmler : MainAPI() {
+    // ! CloudFlare bot korumasini asma
+    private val cloudflareKiller by lazy { CloudflareKiller() }
+    private val interceptor      by lazy { CloudflareInterceptor(cloudflareKiller) }
+
+    class CloudflareInterceptor(private val cloudflareKiller: CloudflareKiller): Interceptor {
+        override fun intercept(chain: Interceptor.Chain): Response {
+            val response = chain.proceed(chain.request())
+            val doc      = Jsoup.parse(response.peekBody(1024 * 1024).string())
+
+            if (doc.text().contains("Just a moment")) {
+                return cloudflareKiller.intercept(chain)
+            }
+
+            return response
+        }
+    }
     override var mainUrl              = "https://kultfilmler.net"
     override var name                 = "KultFilmler"
     override val hasMainPage          = true
@@ -47,7 +66,7 @@ class KultFilmler : MainAPI() {
     )
 
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
-        val document = app.get("${request.data}${page}").document
+        val document = app.get("${request.data}${page}", interceptor = interceptor).document
         val home     = document.select("div.movie-box").mapNotNull { it.toSearchResult() }
 
         return newHomePageResponse(request.name, home)
@@ -66,7 +85,7 @@ class KultFilmler : MainAPI() {
     }
 
     override suspend fun search(query: String): List<SearchResponse> {
-        val document = app.get("${mainUrl}?s=${query}").document
+        val document = app.get("${mainUrl}?s=${query}", interceptor = interceptor).document
 
         return document.select("div.movie-box").mapNotNull { it.toSearchResult() }
     }
@@ -74,7 +93,7 @@ class KultFilmler : MainAPI() {
     override suspend fun quickSearch(query: String): List<SearchResponse> = search(query)
 
     override suspend fun load(url: String): LoadResponse? {
-        val document = app.get(url).document
+        val document = app.get(url, interceptor = interceptor).document
 
         val title           = document.selectFirst("div.film h1")?.text()?.trim() ?: document.selectFirst("h1.film")?.text()?.trim() ?: return null
         val poster          = fixUrlNull(document.selectFirst("[property='og:image']")?.attr("content"))
@@ -147,7 +166,7 @@ class KultFilmler : MainAPI() {
 
     override suspend fun loadLinks(data: String, isCasting: Boolean, subtitleCallback: (SubtitleFile) -> Unit, callback: (ExtractorLink) -> Unit): Boolean {
         Log.d("KLT", "data » $data")
-        val document = app.get(data).document
+        val document = app.get(data, interceptor = interceptor).document
         val iframes  = mutableSetOf<String>()
 
         val mainFrame = getIframe(document.html())
@@ -156,7 +175,7 @@ class KultFilmler : MainAPI() {
         document.select("div.parts-middle").forEach {
             val alternatif = it.selectFirst("a")?.attr("href")
             if (alternatif != null) {
-                val alternatifDocument = app.get(alternatif).document
+                val alternatifDocument = app.get(alternatif, interceptor = interceptor).document
                 val alternatifFrame    = getIframe(alternatifDocument.html())
                 iframes.add(alternatifFrame)
             }
@@ -169,7 +188,7 @@ class KultFilmler : MainAPI() {
                     "User-Agent"     to "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Mobile Safari/537.36",
                     "Sec-Fetch-Dest" to "iframe"
                 )
-                val iSource = app.get(iframe, headers=headers, referer="${mainUrl}/").text
+                val iSource = app.get(iframe, headers=headers, referer="${mainUrl}/", interceptor = interceptor).text
                 val m3uLink = Regex("""file:"([^"]+)""").find(iSource)?.groupValues?.get(1) ?: throw ErrorLoadingException("m3u link not found")
 
                 Log.d("Kekik_VidMoly", "m3uLink » $m3uLink")

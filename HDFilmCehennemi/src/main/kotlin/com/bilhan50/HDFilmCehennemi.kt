@@ -10,8 +10,27 @@ import com.lagradost.cloudstream3.LoadResponse.Companion.addActors
 import com.lagradost.cloudstream3.LoadResponse.Companion.addTrailer
 import com.fasterxml.jackson.annotation.JsonProperty
 import org.jsoup.Jsoup
+import com.lagradost.cloudstream3.network.CloudflareKiller
+import okhttp3.Interceptor
+import okhttp3.Response
 
 class HDFilmCehennemi : MainAPI() {
+    // ! CloudFlare bot korumasini asma
+    private val cloudflareKiller by lazy { CloudflareKiller() }
+    private val interceptor      by lazy { CloudflareInterceptor(cloudflareKiller) }
+
+    class CloudflareInterceptor(private val cloudflareKiller: CloudflareKiller): Interceptor {
+        override fun intercept(chain: Interceptor.Chain): Response {
+            val response = chain.proceed(chain.request())
+            val doc      = Jsoup.parse(response.peekBody(1024 * 1024).string())
+
+            if (doc.text().contains("Just a moment")) {
+                return cloudflareKiller.intercept(chain)
+            }
+
+            return response
+        }
+    }
     override var mainUrl              = "https://www.hdfilmcehennemi.nl"
     override var name                 = "HDFilmCehennemi"
     override val hasMainPage          = true
@@ -37,7 +56,7 @@ class HDFilmCehennemi : MainAPI() {
     )
 
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
-        val document = app.get(request.data).document
+        val document = app.get(request.data, interceptor = interceptor).document
 
         val home: List<SearchResponse>?
 
@@ -59,7 +78,7 @@ class HDFilmCehennemi : MainAPI() {
     override suspend fun search(query: String): List<SearchResponse> {
         val response      = app.get(
             "${mainUrl}/search?q=${query}",
-            headers = mapOf("X-Requested-With" to "fetch")
+            headers = mapOf("X-Requested-With" to "fetch"), interceptor = interceptor
         ).parsedSafe<Results>() ?: return emptyList()
         val searchResults = mutableListOf<SearchResponse>()
 
@@ -79,7 +98,7 @@ class HDFilmCehennemi : MainAPI() {
     }
 
     override suspend fun load(url: String): LoadResponse? {
-        val document = app.get(url).document
+        val document = app.get(url, interceptor = interceptor).document
 
         val title       = document.selectFirst("h1.section-title")?.text()?.substringBefore(" izle") ?: return null
         val poster      = fixUrlNull(document.select("aside.post-info-poster img.lazyload").lastOrNull()?.attr("data-src"))
@@ -144,7 +163,7 @@ class HDFilmCehennemi : MainAPI() {
     }
 
     private suspend fun invokeLocalSource(source: String, url: String, subtitleCallback: (SubtitleFile) -> Unit, callback: (ExtractorLink) -> Unit ) {
-        val script    = app.get(url, referer = "${mainUrl}/").document.select("script").find { it.data().contains("sources:") }?.data() ?: return
+        val script    = app.get(url, referer = "${mainUrl}/", interceptor = interceptor).document.select("script").find { it.data().contains("sources:") }?.data() ?: return
         val videoData = getAndUnpack(script).substringAfter("file_link=\"").substringBefore("\";")
         val subData   = script.substringAfter("tracks: [").substringBefore("]")
 
@@ -169,7 +188,7 @@ class HDFilmCehennemi : MainAPI() {
 
     override suspend fun loadLinks(data: String, isCasting: Boolean, subtitleCallback: (SubtitleFile) -> Unit, callback: (ExtractorLink) -> Unit ): Boolean {
         Log.d("HDCH", "data » $data")
-        val document = app.get(data).document
+        val document = app.get(data, interceptor = interceptor).document
 
         document.select("div.alternative-links").map { element ->
             element to element.attr("data-lang").uppercase()
@@ -183,7 +202,7 @@ class HDFilmCehennemi : MainAPI() {
                         "Content-Type"     to "application/json",
                         "X-Requested-With" to "fetch"
                     ),
-                    referer = data
+                    referer = data, interceptor = interceptor
                 ).text
 
                 var iframe = Regex("""data-src=\\"([^"]+)""").find(apiGet)?.groupValues?.get(1)!!.replace("\\", "")

@@ -8,6 +8,10 @@ import com.lagradost.cloudstream3.*
 import com.lagradost.cloudstream3.utils.*
 import com.lagradost.cloudstream3.LoadResponse.Companion.addActors
 import com.lagradost.cloudstream3.LoadResponse.Companion.addTrailer
+import com.lagradost.cloudstream3.network.CloudflareKiller
+import okhttp3.Interceptor
+import okhttp3.Response
+import org.jsoup.Jsoup
 
 class FilmModu : MainAPI() {
     override var mainUrl              = "https://www.filmmodu.one"
@@ -16,6 +20,24 @@ class FilmModu : MainAPI() {
     override var lang                 = "tr"
     override val hasQuickSearch       = false
     override val supportedTypes       = setOf(TvType.Movie)
+
+    // ! CloudFlare bot korumasini asma (DiziBox/WebteIzle ile ayni kalip)
+    private val cloudflareKiller by lazy { CloudflareKiller() }
+    private val interceptor      by lazy { CloudflareInterceptor(cloudflareKiller) }
+
+    class CloudflareInterceptor(private val cloudflareKiller: CloudflareKiller): Interceptor {
+        override fun intercept(chain: Interceptor.Chain): Response {
+            val response = chain.proceed(chain.request())
+            val doc      = Jsoup.parse(response.peekBody(1024 * 1024).string())
+
+            // Cloudflare "Just a moment..." challenge sayfasi donduyse webview ile as
+            if (doc.text().contains("Just a moment")) {
+                return cloudflareKiller.intercept(chain)
+            }
+
+            return response
+        }
+    }
 
     override val mainPage = mainPageOf(
         "${mainUrl}/hd-film-kategori/4k-film-izle"          to "4K",
@@ -49,7 +71,7 @@ class FilmModu : MainAPI() {
     )
 
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
-        val document = app.get("${request.data}?page=${page}").document
+        val document = app.get("${request.data}?page=${page}", referer = "$mainUrl/", interceptor = interceptor).document
         val home     = document.select("div.movie").mapNotNull { it.toMainPageResult() }
 
         return newHomePageResponse(request.name, home)
@@ -69,7 +91,7 @@ class FilmModu : MainAPI() {
     }
 
     override suspend fun search(query: String): List<SearchResponse> {
-        val document = app.get("${mainUrl}/film-ara?term=${query}").document
+        val document = app.get("${mainUrl}/film-ara?term=${query}", referer = "$mainUrl/", interceptor = interceptor).document
 
         return document.select("div.movie").mapNotNull { it.toMainPageResult() }
     }
@@ -77,7 +99,8 @@ class FilmModu : MainAPI() {
     override suspend fun quickSearch(query: String): List<SearchResponse> = search(query)
 
     override suspend fun load(url: String): LoadResponse? {
-        val document = app.get(url).document
+        val detay    = app.get(url, referer = "$mainUrl/", interceptor = interceptor)
+        val document = detay.document
 
         val orgTitle    = document.selectFirst("div.titles h1")?.text()?.trim() ?: return null
         val altTitle    = document.selectFirst("div.titles h2")?.text()?.trim() ?: ""
@@ -103,18 +126,52 @@ class FilmModu : MainAPI() {
 
     override suspend fun loadLinks(data: String, isCasting: Boolean, subtitleCallback: (SubtitleFile) -> Unit, callback: (ExtractorLink) -> Unit): Boolean {
         Log.d("FLMMD", "data » $data")
-        val document = app.get(data).document
 
-        document.select("div.alternates a").forEach {
-            val altLink = fixUrlNull(it.attr("href")) ?: return@forEach
-            val altName = it.text()
-            if (altName == "Fragman") return@forEach
+        val detay     = app.get(data, referer = "$mainUrl/", interceptor = interceptor)
+        val document  = detay.document
+        // * Ham HTML aliniyor: videoId/videoType <script> icinde ve Jsoup text() script icerigini dislar.
+        val detayHtml = document.toString()
 
-            val altReq  = app.get(altLink)
-            val vidId   = Regex("""var videoId = '(.*)'""").find(altReq.text)?.groupValues?.get(1) ?: return@forEach
-            val vidType = Regex("""var videoType = '(.*)'""").find(altReq.text)?.groupValues?.get(1) ?: return@forEach
+        // * 1) Alternatif oynatici linkleri (Fragman haric)
+        val alternatifler = document.select("div.alternates a").mapNotNull {
+            val link = fixUrlNull(it.attr("href")) ?: return@mapNotNull null
+            val ad   = it.text().trim()
+            if (ad.isEmpty() || ad.equals("Fragman", ignoreCase = true)) null else (ad to link)
+        }
 
-            val vidReq = app.get("${mainUrl}/get-source?movie_id=${vidId}&type=${vidType}").parsedSafe<GetSource>() ?: return@forEach
+        // * (etiket, movie_id, tip) seklinde cagri listesi
+        val istekler = ArrayList<Triple<String, String, String>>()
+
+        for ((ad, link) in alternatifler) {
+            val altHtml = try { app.get(link, referer = data, interceptor = interceptor).document.toString() } catch (e: Throwable) { "" }
+            val vidId   = Regex("""var videoId\s*=\s*'([^']*)'""").find(altHtml)?.groupValues?.get(1)
+            if (vidId.isNullOrEmpty()) continue
+
+            val vidType = Regex("""var videoType\s*=\s*'([^']*)'""").find(altHtml)?.groupValues?.get(1)
+            if (!vidType.isNullOrEmpty()) {
+                istekler.add(Triple(ad, vidId, vidType))
+            } else {
+                // * tip bosssa site tr (dublaj) / en (altyazi) ikilisini kullaniyor
+                istekler.add(Triple("$ad Türkçe Dublaj", vidId, "tr"))
+                istekler.add(Triple("$ad Türkçe Altyazılı", vidId, "en"))
+            }
+        }
+
+        // * 2) Yedek: alternatif hic bulunamazsa detay sayfasinin kendi videoId'si ile tr/en dene
+        if (istekler.isEmpty()) {
+            val detayId = Regex("""var videoId\s*=\s*'([^']*)'""").find(detayHtml)?.groupValues?.get(1)
+            if (!detayId.isNullOrEmpty()) {
+                istekler.add(Triple("${this.name} Türkçe Dublaj", detayId, "tr"))
+                istekler.add(Triple("${this.name} Türkçe Altyazılı", detayId, "en"))
+            }
+        }
+
+        var linkSayisi = 0
+        for ((etiket, vidId, vidType) in istekler) {
+            val kaynak = "${mainUrl}/get-source?movie_id=${vidId}&type=${vidType}"
+            val vidReq = try {
+                app.get(kaynak, referer = data, interceptor = interceptor).parsedSafe<GetSource>()
+            } catch (e: Throwable) { null } ?: continue
 
             if (vidReq.subtitle != null) {
                 subtitleCallback.invoke(
@@ -126,10 +183,11 @@ class FilmModu : MainAPI() {
             }
 
             for (source in vidReq.sources ?: emptyList()) {
+                linkSayisi++
                 callback.invoke(
                     newExtractorLink(
-                        source = "${this.name} - $altName",
-                        name = "${this.name} - $altName",
+                        source = "${this.name} - $etiket",
+                        name = "${this.name} - $etiket",
                         url = fixUrl(source.src)
                     ) {
                         this.referer = "${mainUrl}/"
@@ -139,6 +197,7 @@ class FilmModu : MainAPI() {
             }
         }
 
+        Log.d("FLMMD", "istek=${istekler.size} link=$linkSayisi")
         return true
     }
 }

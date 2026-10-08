@@ -7,8 +7,28 @@ import org.jsoup.nodes.Element
 import com.lagradost.cloudstream3.*
 import com.lagradost.cloudstream3.utils.*
 import com.lagradost.cloudstream3.LoadResponse.Companion.addActors
+import com.lagradost.cloudstream3.network.CloudflareKiller
+import okhttp3.Interceptor
+import okhttp3.Response
+import org.jsoup.Jsoup
 
 class JetFilmizle : MainAPI() {
+    // ! CloudFlare bot korumasini asma
+    private val cloudflareKiller by lazy { CloudflareKiller() }
+    private val interceptor      by lazy { CloudflareInterceptor(cloudflareKiller) }
+
+    class CloudflareInterceptor(private val cloudflareKiller: CloudflareKiller): Interceptor {
+        override fun intercept(chain: Interceptor.Chain): Response {
+            val response = chain.proceed(chain.request())
+            val doc      = Jsoup.parse(response.peekBody(1024 * 1024).string())
+
+            if (doc.text().contains("Just a moment")) {
+                return cloudflareKiller.intercept(chain)
+            }
+
+            return response
+        }
+    }
     override var mainUrl              = "https://jetfilmizle.now"
     override var name                 = "JetFilmizle"
     override val hasMainPage          = true
@@ -25,7 +45,7 @@ class JetFilmizle : MainAPI() {
     )
 
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
-        val document = app.get("${request.data}${page}").document
+        val document = app.get("${request.data}${page}", interceptor = interceptor).document
         val home     = document.select("article.movie").mapNotNull { it.toSearchResult() }
 
         return newHomePageResponse(request.name, home)
@@ -48,7 +68,7 @@ class JetFilmizle : MainAPI() {
         val document = app.post(
             "${mainUrl}/filmara.php",
             referer = "${mainUrl}/",
-            data    = mapOf("s" to query)
+            data    = mapOf("s" to query), interceptor = interceptor
         ).document
 
         return document.select("article.movie").mapNotNull { it.toSearchResult() }
@@ -57,7 +77,7 @@ class JetFilmizle : MainAPI() {
     override suspend fun quickSearch(query: String): List<SearchResponse> = search(query)
 
     override suspend fun load(url: String): LoadResponse? {
-        val document = app.get(url).document
+        val document = app.get(url, interceptor = interceptor).document
 
         val title       = document.selectFirst("section.movie-exp div.movie-exp-title")?.text()?.substringBefore(" izle")?.trim() ?: return null
         val poster      = fixUrlNull(document.selectFirst("section.movie-exp img")?.attr("data-src")) ?: fixUrlNull(document.selectFirst("section.movie-exp img")?.attr("src"))
@@ -95,7 +115,7 @@ class JetFilmizle : MainAPI() {
 
     override suspend fun loadLinks(data: String, isCasting: Boolean, subtitleCallback: (SubtitleFile) -> Unit, callback: (ExtractorLink) -> Unit): Boolean {
         Log.d("JTF", "data » $data")
-        val document = app.get(data).document
+        val document = app.get(data, interceptor = interceptor).document
 
         val iframes    = mutableListOf<String>()
         val mainIframe = fixUrlNull(document.selectFirst("div#movie iframe")?.attr("data-src")) ?: fixUrlNull(document.selectFirst("div#movie iframe")?.attr("data")) ?: fixUrlNull(document.selectFirst("div#movie iframe")?.attr("src"))
@@ -108,7 +128,7 @@ class JetFilmizle : MainAPI() {
             val source = it.selectFirst("span")?.text()?.trim() ?: return@forEach
             if (source.lowercase().contains("fragman")) return@forEach
 
-            val movDoc = app.get(it.attr("href")).document
+            val movDoc = app.get(it.attr("href"), interceptor = interceptor).document
             val iframe = fixUrlNull(movDoc.selectFirst("div#movie iframe")?.attr("data-src")) ?: fixUrlNull(movDoc.selectFirst("div#movie iframe")?.attr("data")) ?: fixUrlNull(movDoc.selectFirst("div#movie iframe")?.attr("src"))
             Log.d("JTF", "iframe » $iframe")
 
@@ -125,7 +145,7 @@ class JetFilmizle : MainAPI() {
         for (iframe in iframes) {
             if (iframe.contains("jetv.xyz")) {
                 Log.d("JTF", "jetv » $iframe")
-                val jetvDoc    = app.get(iframe).document
+                val jetvDoc    = app.get(iframe, interceptor = interceptor).document
                 val jetvIframe = fixUrlNull(jetvDoc.selectFirst("iframe")?.attr("src")) ?: continue
                 Log.d("JTF", "jetvIframe » $jetvIframe")
 
