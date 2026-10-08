@@ -33,7 +33,7 @@ class TurkAnime : MainAPI() {
     }
     override var mainUrl              = "https://www.turkanime.tv"
     override var name                 = "TurkAnime"
-    override val hasMainPage          = true
+    override val hasMainPage          = false // * site 2026'da kapandi, artik yalnizca "veda" sayfasi donuyor
     override var lang                 = "tr"
     override val hasQuickSearch       = false
     override val supportedTypes       = setOf(TvType.Anime, TvType.TvSeries, TvType.Movie)

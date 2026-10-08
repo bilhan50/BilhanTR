@@ -148,23 +148,7 @@ class SezonlukDizi : MainAPI() {
             val iframe = fixUrlNull(veriResponse.selectFirst("iframe")?.attr("src")) ?: return@forEach
             Log.d("SZD", "dil»1 | iframe » $iframe")
 
-            loadExtractor(iframe, "${mainUrl}/", subtitleCallback) { link ->
-                kotlinx.coroutines.runBlocking {
-                callback.invoke(
-                    newExtractorLink(
-                        source = "AltYazı - ${veri.baslik}",
-                        name = "AltYazı - ${veri.baslik}",
-                        url = link.url
-                    ) {
-                        this.referer = link.referer
-                        this.quality = link.quality
-                        this.headers = link.headers
-                        this.extractorData = link.extractorData
-                        this.type = link.type
-                    }
-                )
-            }
-            }
+            kaynakAktar(iframe, "AltYazı - ${veri.baslik}", subtitleCallback, callback)
         }
 
         val dublajResponse = app.post(
@@ -187,13 +171,55 @@ class SezonlukDizi : MainAPI() {
             val iframe = fixUrlNull(veriResponse.selectFirst("iframe")?.attr("src")) ?: return@forEach
             Log.d("SZD", "dil»0 | iframe » $iframe")
 
-            loadExtractor(iframe, "${mainUrl}/", subtitleCallback) { link ->
-                kotlinx.coroutines.runBlocking {
+            kaynakAktar(iframe, "Dublaj - ${veri.baslik}", subtitleCallback, callback)
+        }
+
+        return true
+    }
+
+    /**
+     * Kaynak iframe'ini cozup link olarak iletir.
+     * vidmoly icin sayfada dogrudan HLS (`...master.m3u8?...`) bulunur,
+     * digerleri CloudStream extractor'ina birakilir.
+     */
+    private suspend fun kaynakAktar(
+        iframe: String, etiket: String,
+        subtitleCallback: (SubtitleFile) -> Unit, callback: (ExtractorLink) -> Unit
+    ) {
+        val url = if (iframe.startsWith("//")) "https:$iframe" else iframe
+
+        if (url.contains("vidmoly")) {
+            val headers = mapOf(
+                "User-Agent"     to "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Mobile Safari/537.36",
+                "Sec-Fetch-Dest" to "iframe"
+            )
+            val kaynak = app.get(url, headers = headers, referer = "${mainUrl}/", interceptor = interceptor).text
+            val m3u = Regex("""https?://[^"'\s\\]+\.m3u8[^"'\s\\]*""").find(kaynak)?.value
+                ?: Regex("""file:\s*["']([^"']*\.m3u8[^"']*)["']""").find(kaynak)?.groupValues?.get(1)
+            if (m3u.isNullOrBlank()) return
+
+            Log.d("SZD", "vidmoly » $m3u")
+            callback.invoke(
+                newExtractorLink(
+                    source = "VidMoly - $etiket",
+                    name   = "VidMoly - $etiket",
+                    url    = m3u
+                ) {
+                    this.referer = "https://vidmoly.net/"
+                    this.quality = Qualities.Unknown.value
+                    this.type    = ExtractorLinkType.M3U8
+                }
+            )
+            return
+        }
+
+        loadExtractor(url, "${mainUrl}/", subtitleCallback) { link ->
+            kotlinx.coroutines.runBlocking {
                 callback.invoke(
                     newExtractorLink(
-                        source = "Dublaj - ${veri.baslik}",
-                        name = "Dublaj - ${veri.baslik}",
-                        url = link.url
+                        source = etiket,
+                        name   = etiket,
+                        url    = link.url
                     ) {
                         this.referer = link.referer
                         this.quality = link.quality
@@ -203,10 +229,7 @@ class SezonlukDizi : MainAPI() {
                     }
                 )
             }
-            }
         }
-
-        return true
     }
 
     //Helper function for getting the number (probably some kind of version?) after the dataAlternatif and dataEmbed
