@@ -67,15 +67,24 @@ class KultFilmler : MainAPI() {
 
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
         val document = app.get("${request.data}${page}", interceptor = interceptor).document
-        val home     = document.select("div.movie-box").mapNotNull { it.toSearchResult() }
+        val home     = document.select("a.mcard, div.movie-box").mapNotNull { it.toSearchResult() }
 
         return newHomePageResponse(request.name, home)
     }
 
     private fun Element.toSearchResult(): SearchResponse? {
-        val title     = this.selectFirst("div.name a")?.text() ?: return null
-        val href      = fixUrlNull(this.selectFirst("div.name a")?.attr("href")) ?: return null
-        val posterUrl = fixUrlNull(this.selectFirst("div.img img")?.attr("src"))
+        // * yeni tema: <a class="mcard" href="..."><div class="mbody"><div class="mtx"><h3>...
+        // * eski tema: <div class="movie-box"><div class="name"><a href="...">
+        val title = this.selectFirst("div.mtx h3")?.text()?.trim()
+            ?: this.selectFirst("div.name a")?.text()?.trim()
+            ?: this.selectFirst("img.pimg")?.attr("alt")?.trim()
+            ?: return null
+
+        val href = fixUrlNull(
+            this.attr("href").ifBlank { this.selectFirst("div.name a")?.attr("href") ?: "" }
+        ) ?: return null
+
+        val posterUrl = fixUrlNull(this.selectFirst("img.pimg, div.img img")?.attr("src"))
 
         return if (href.contains("/dizi/")) {
             newTvSeriesSearchResponse(title, href, TvType.TvSeries) { this.posterUrl = posterUrl }
@@ -87,7 +96,7 @@ class KultFilmler : MainAPI() {
     override suspend fun search(query: String): List<SearchResponse> {
         val document = app.get("${mainUrl}?s=${query}", interceptor = interceptor).document
 
-        return document.select("div.movie-box").mapNotNull { it.toSearchResult() }
+        return document.select("a.mcard, div.movie-box").mapNotNull { it.toSearchResult() }
     }
 
     override suspend fun quickSearch(query: String): List<SearchResponse> = search(query)
@@ -95,17 +104,34 @@ class KultFilmler : MainAPI() {
     override suspend fun load(url: String): LoadResponse? {
         val document = app.get(url, interceptor = interceptor).document
 
-        val title           = document.selectFirst("div.film h1")?.text()?.trim() ?: document.selectFirst("h1.film")?.text()?.trim() ?: return null
-        val poster          = fixUrlNull(document.selectFirst("[property='og:image']")?.attr("content"))
-        val description     = document.selectFirst("div.description")?.text()?.trim()
-        var tags            = document.select("ul.post-categories a").map { it.text() }
-        val rating          = document.selectFirst("div.imdb-count")?.text()?.trim()?.split(" ")?.first()?.toScore()
-        val year            = Regex("""(\d+)""").find(document.selectFirst("li.release")?.text()?.trim() ?: "")?.groupValues?.get(1)?.toIntOrNull()
-        val duration        = Regex("""(\d+)""").find(document.selectFirst("li.time")?.text()?.trim() ?: "")?.groupValues?.get(1)?.toIntOrNull()
-        val recommendations = document.select("div.movie-box").mapNotNull { it.toSearchResult() }
-        val actors          = document.select("[href*='oyuncular']").map {
-            Actor(it.text())
+        // * yeni tema: h1.vtitle  |  eski tema: div.film h1 / h1.film
+        val title       = document.selectFirst("h1.vtitle")?.text()?.trim()
+            ?: document.selectFirst("div.film h1, h1.film")?.text()?.trim()
+            ?: document.selectFirst("h1")?.text()?.trim()
+            ?: return null
+        val poster      = fixUrlNull(document.selectFirst("[property='og:image']")?.attr("content"))
+        val description = document.selectFirst("p.desc, #desc, div.description")?.text()?.trim()
+
+        // * yeni temada film bilgileri "div.info" satirlari halinde
+        val infoRows = document.select("div.info div.irow").associate {
+            (it.selectFirst("div.ilabel")?.text() ?: "") to (it.selectFirst("div.ivalue, div.imdb")?.text() ?: "")
         }
+        fun bilgi(vararg anahtar: String): String? = infoRows.entries
+            .firstOrNull { e -> anahtar.any { e.key.contains(it, ignoreCase = true) } }
+            ?.value?.trim()?.takeIf { it.isNotEmpty() }
+
+        var tags = document.select("ul.post-categories a").map { it.text() }
+        if (tags.isEmpty()) {
+            tags = (bilgi("Tür") ?: "").split("•", ",", "/").map { it.trim() }.filter { it.isNotEmpty() }
+        }
+        val rating   = bilgi("IMDb")?.let { Regex("""\d+[.,]?\d*""").find(it)?.value }?.toScore()
+        val year     = bilgi("Yıl")?.let { Regex("""(19|20)\d{2}""").find(it)?.value }?.toIntOrNull()
+        val duration = bilgi("Süre")?.let { Regex("""\d+""").find(it)?.value }?.toIntOrNull()
+
+        val recommendations = document.select("a.mcard, div.movie-box").mapNotNull { it.toSearchResult() }
+        val actors          = document.select("a.cmember h5, [href*='oyuncular']")
+            .mapNotNull { Actor(it.text().trim()).takeIf { a -> a.name.isNotBlank() } }
+            .distinctBy { it.name }
 
         if (url.contains("/dizi/")) {
             tags  = document.select("div.category a").map { it.text() }
@@ -164,32 +190,55 @@ class KultFilmler : MainAPI() {
         return fixUrlNull(iframe.selectFirst("iframe")?.attr("src")) ?: ""
     }
 
+    /** "//ok.ru/..." gibi kacisli veya protokol-gomulu kaynak adreslerini duzeltir */
+    private fun kaynakAdresi(raw: String): String {
+        var s = raw.replace("\\/", "/").trim()
+        if (s.startsWith("//")) s = "https:$s"
+        return s
+    }
+
     override suspend fun loadLinks(data: String, isCasting: Boolean, subtitleCallback: (SubtitleFile) -> Unit, callback: (ExtractorLink) -> Unit): Boolean {
         Log.d("KLT", "data » $data")
         val document = app.get(data, interceptor = interceptor).document
         val iframes  = mutableSetOf<String>()
 
-        val mainFrame = getIframe(document.html())
-        iframes.add(mainFrame)
+        // * yeni tema: acik iframe + <script id="kf-srcdata"> icindeki JSON kaynaklari
+        document.select("div.kf-embed iframe, div#player iframe").forEach {
+            val src = it.attr("src").ifBlank { it.attr("data-src") }
+            if (src.isNotBlank()) iframes.add(kaynakAdresi(src))
+        }
+
+        val srcData = document.selectFirst("script#kf-srcdata")?.data()
+        if (!srcData.isNullOrBlank()) {
+            Regex("""src=\\"(.*?)\\"""").findAll(srcData).forEach { m ->
+                val src = kaynakAdresi(m.groupValues[1])
+                if (src.isNotBlank()) iframes.add(src)
+            }
+        }
+
+        // * eski tema: base64 kodlu iframe ve alternatif kaynaklar
+        getIframe(document.html()).takeIf { it.isNotBlank() }?.let { iframes.add(it) }
 
         document.select("div.parts-middle").forEach {
             val alternatif = it.selectFirst("a")?.attr("href")
             if (alternatif != null) {
                 val alternatifDocument = app.get(alternatif, interceptor = interceptor).document
-                val alternatifFrame    = getIframe(alternatifDocument.html())
-                iframes.add(alternatifFrame)
+                getIframe(alternatifDocument.html()).takeIf { f -> f.isNotBlank() }?.let { f -> iframes.add(f) }
             }
         }
 
         for (iframe in iframes) {
             Log.d("KLT", "iframe » $iframe")
+            if (iframe.isBlank()) continue
             if (iframe.contains("vidmoly")) {
                 val headers  = mapOf(
                     "User-Agent"     to "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Mobile Safari/537.36",
                     "Sec-Fetch-Dest" to "iframe"
                 )
                 val iSource = app.get(iframe, headers=headers, referer="${mainUrl}/", interceptor = interceptor).text
-                val m3uLink = Regex("""file:"([^"]+)""").find(iSource)?.groupValues?.get(1) ?: throw ErrorLoadingException("m3u link not found")
+                val m3uLink = Regex("""https?://[^"'\s\\]+\.m3u8[^"'\s\\]*""").find(iSource)?.value
+                    ?: Regex("""file:\s*["']([^"']*\.m3u8[^"']*)["']""").find(iSource)?.groupValues?.get(1)
+                if (m3uLink.isNullOrBlank()) continue
 
                 Log.d("Kekik_VidMoly", "m3uLink » $m3uLink")
 

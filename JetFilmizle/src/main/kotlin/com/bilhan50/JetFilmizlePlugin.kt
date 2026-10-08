@@ -9,5 +9,8 @@ class JetFilmizlePlugin: Plugin() {
     override fun load(context: Context) {
         registerMainAPI(JetFilmizle())
         registerExtractorAPI(PixelDrain())
+        registerExtractorAPI(Odnoklassniki())
+        registerExtractorAPI(OkRuSSL())
+        registerExtractorAPI(OkRuHTTP())
     }
 }
