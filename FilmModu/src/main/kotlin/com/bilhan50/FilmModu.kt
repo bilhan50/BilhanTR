@@ -105,12 +105,32 @@ class FilmModu : MainAPI() {
         val orgTitle    = document.selectFirst("div.titles h1")?.text()?.trim() ?: return null
         val altTitle    = document.selectFirst("div.titles h2")?.text()?.trim() ?: ""
         val title       = if (altTitle.isNotEmpty()) "$orgTitle - $altTitle" else orgTitle
-        val poster      = fixUrlNull(document.selectFirst("img.img-responsive")?.attr("src"))
+        // * yeni tema: poster <img itemprop="image">, film bilgileri "Tur"/"IMDB" etiketli <p> icinde
+        val poster      = fixUrlNull(document.selectFirst("img[itemprop='image']")?.attr("src"))
+            ?: fixUrlNull(document.selectFirst("img.img-responsive")?.attr("src"))
         val description = document.selectFirst("p[itemprop='description']")?.text()?.trim()
         val year        = document.selectFirst("span[itemprop='dateCreated']")?.text()?.trim()?.toIntOrNull()
-        val tags        = document.select("div.description a[href*='-kategori/']").map { it.text() }
-        val rating      = document.selectFirst("div.description p")?.ownText()?.split(" ")?.last()?.trim()?.toDoubleOrNull()
-        val actors      = document.select("div.description a[href*='-oyuncu-']").map { Actor(it.selectFirst("span")!!.text()) }
+
+        // * tur linkleri artik /film-tur/ seklinde (eski: -kategori/); <p> icindekiler filmin kendi turu
+        var tags = document.select("p > a[href*='/film-tur/']").map { it.text().trim() }.filter { it.isNotEmpty() }
+        if (tags.isEmpty()) {
+            tags = document.select("div.description a[href*='-kategori/']").map { it.text() }
+        }
+
+        val rating = document.select("p").firstOrNull { p ->
+            p.selectFirst("strong")?.text()?.contains("IMDB", ignoreCase = true) == true
+        }?.ownText()?.substringAfter(":")?.trim()?.toDoubleOrNull()
+            ?: document.selectFirst("div.description p")?.ownText()?.split(" ")?.last()?.trim()?.toDoubleOrNull()
+
+        var actors = document.select("a[itemprop='actor'] span[itemprop='name']")
+            .map { Actor(it.text().trim()) }.filter { it.name.isNotBlank() }
+        if (actors.isEmpty()) {
+            actors = document.select("div.description a[href*='-oyuncu-']").mapNotNull {
+                val ad = it.selectFirst("span")?.text()?.trim() ?: return@mapNotNull null
+                Actor(ad)
+            }
+        }
+        actors = actors.distinctBy { it.name }
         val trailer     = document.selectFirst("div.container iframe")?.attr("src")
 
         return newMovieLoadResponse(title, url, TvType.Movie, url) {
