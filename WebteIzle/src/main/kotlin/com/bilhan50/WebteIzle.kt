@@ -269,6 +269,38 @@ class WebteIzle : MainAPI() {
 
                 if (iframe != null) {
                     Log.d("WBTI", "iframe » $iframe")
+
+                    // * vidmoly: embed sayfasi HLS kaynagini dogrudan verir
+                    if (iframe.contains("vidmoly")) {
+                        val vmKaynak = app.get(
+                            iframe,
+                            headers     = mapOf(
+                                "User-Agent"     to "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Mobile Safari/537.36",
+                                "Sec-Fetch-Dest" to "iframe"
+                            ),
+                            referer     = "${mainUrl}/",
+                            interceptor = interceptor
+                        ).text
+                        val vmM3u = Regex("""https?://[^"'\s\\]+\.m3u8[^"'\s\\]*""").find(vmKaynak)?.value
+                            ?: Regex("""file:\s*["']([^"']*\.m3u8[^"']*)["']""").find(vmKaynak)?.groupValues?.get(1)
+
+                        if (!vmM3u.isNullOrBlank()) {
+                            Log.d("WBTI", "vidmoly » $vmM3u")
+                            callback.invoke(
+                                newExtractorLink(
+                                    source = "$dilAd - VidMoly",
+                                    name   = "$dilAd - VidMoly",
+                                    url    = vmM3u
+                                ) {
+                                    this.referer = "https://vidmoly.to/"
+                                    this.quality = Qualities.Unknown.value
+                                    this.type    = ExtractorLinkType.M3U8
+                                }
+                            )
+                            continue
+                        }
+                    }
+
                     loadExtractor(iframe, "${mainUrl}/", subtitleCallback) { link ->
                         kotlinx.coroutines.runBlocking {
                         callback.invoke(
