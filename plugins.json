@@ -25,10 +25,10 @@
     },
     {
         "iconUrl": "https://www.google.com/s2/favicons?domain=belgeselx.com&sz=%size%",
-        "fileHash": "sha256-fa84ff1e8b515c904ce793ee3522981c742dee653f54d9a43ae0ce730a12642a",
+        "fileHash": "sha256-a3937748d1bb6fdf474d33e84008bcac2e68f19bf6c767ed44c4a3dfefb60e74",
         "apiVersion": 1,
         "repositoryUrl": "https://github.com/bilhan50/BilhanTR",
-        "fileSize": 23897,
+        "fileSize": 31055,
         "status": 1,
         "language": "tr",
         "authors": [
@@ -39,7 +39,7 @@
             "Documentary",
             "Movie"
         ],
-        "version": 7,
+        "version": 8,
         "internalName": "BelgeselX",
         "description": "En yeni belgeseller, t\u00fcrk\u00e7e altyaz\u0131l\u0131 yada dublaj olarak 1080p kalitesinde HD belgesel izle.",
         "url": "https://raw.githubusercontent.com/bilhan50/BilhanTR/builds/BelgeselX.cs3",
@@ -424,10 +424,10 @@
     },
     {
         "iconUrl": "https://www.google.com/s2/favicons?domain=jetfilmizle.now&sz=%size%",
-        "fileHash": "sha256-2cfeffca3b77039559be0ae233256f985aa6e6a4d1c0500440e42f9afff2edd6",
+        "fileHash": "sha256-63a2110842ff4160e7bec8bdc6557c855d1bea5dbc2e1864da3de34b3b696e72",
         "apiVersion": 1,
         "repositoryUrl": "https://github.com/bilhan50/BilhanTR",
-        "fileSize": 17879,
+        "fileSize": 32736,
         "status": 1,
         "language": "tr",
         "authors": [
@@ -436,7 +436,7 @@
         "tvTypes": [
             "Movie"
         ],
-        "version": 22,
+        "version": 23,
         "internalName": "JetFilmizle",
         "description": "Binlerce Film \u0130zleme Se\u00e7ene\u011fiyle En \u0130yi Film \u0130zleme Sitesi",
         "url": "https://raw.githubusercontent.com/bilhan50/BilhanTR/builds/JetFilmizle.cs3",
@@ -465,10 +465,10 @@
     },
     {
         "iconUrl": "https://www.google.com/s2/favicons?domain=kultfilmler.com&sz=%size%",
-        "fileHash": "sha256-032e7f0dfec4b27893f26ccaf859e00305f6a8903f8f47248c09a902070bfa35",
+        "fileHash": "sha256-64aa4300e67f82d18fd054eede6af942d42483ac768ac616fd1fe2f1bff4c474",
         "apiVersion": 1,
         "repositoryUrl": "https://github.com/bilhan50/BilhanTR",
-        "fileSize": 22794,
+        "fileSize": 25541,
         "status": 1,
         "language": "tr",
         "authors": [
@@ -478,7 +478,7 @@
             "Movie",
             "TvSeries"
         ],
-        "version": 9,
+        "version": 10,
         "internalName": "KultFilmler",
         "description": "K\u00fclt Filmler \u00f6zenle en iyi filmleri derler ve iyi bir altyaz\u0131l\u0131 film izleme deneyimi sunmay\u0131 ama\u00e7lar",
         "url": "https://raw.githubusercontent.com/bilhan50/BilhanTR/builds/KultFilmler.cs3",
