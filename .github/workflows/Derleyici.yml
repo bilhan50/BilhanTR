@@ -51,39 +51,79 @@ jobs:
           packages: "platform-tools"
 
       - name: JitPack Hazirligi
-        # JitPack master-SNAPSHOT'u ilk istekte build eder ve o sirada 404 dondurur;
-        # Gradle bunu "Could not find" hatasi olarak yorumlayip derlemeyi olduruyor.
-        # Bu adim iki bağımlılığı da gercek dosyalari inene kadar isitir.
+        # JitPack master-SNAPSHOT soguksa (ilk istekte build ediyorsa) 404 dondurur;
+        # Gradle bunu "Could not find" hatasi sayip derlemeyi oldurur.
+        #
+        # ONCEMEKI HATA: eski kod "$base/gradle-<commit>.pom" diye soruyordu. JitPack'in
+        # urettigi GERCEK ad "gradle-master-<commit>-<n>.pom" (branch adi da dosyada yer
+        # alir). Yanlis ad hep 404 dondugu icin isitma "hazir" sinyali hic alamiyor,
+        # anlamsizca 6 dk bekleyip pes ediyor ve Gradle soguk JitPack'e teslim ediliyordu.
+        #
+        # Simdi once JitPack'in kendi build API'sinden "ok" sinyali bekleniyor, sonra da
+        # Gradle'in isteyecegi gercek .pom dosyasinin 200 dondugu adlarla dogrulaniyor.
         run: |
-          bases=(
-            "https://jitpack.io/com/github/recloudstream/gradle/master-SNAPSHOT"
-            "https://jitpack.io/com/github/recloudstream/gradle/gradle/master-SNAPSHOT"
-          )
-          for base in "${bases[@]}"; do
-            ok=0
-            for i in $(seq 1 24); do
-              ver=$(curl -fsSL --max-time 30 "$base/maven-metadata.xml" 2>/dev/null \
-                    | grep -o '<version>[^<]*</version>' | head -n 1 | sed -e 's/<[^>]*>//g')
-              if [ -n "$ver" ]; then
-                code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 30 "$base/gradle-$ver.pom")
-                echo "  [$i] $base/gradle-$ver.pom -> HTTP $code"
-                if [ "$code" = "200" ]; then ok=1; break; fi
-              else
-                echo "  [$i] metadata alinamadi: $base"
+          jitpack_durum() {
+            curl -fsSL --max-time 30 "$1" 2>/dev/null \
+              | tr -d '\n' \
+              | grep -o '"status"[[:space:]]*:[[:space:]]*"[^"]*"' \
+              | head -n 1 | sed 's/.*"status"[^"]*"\([^"]*\)".*/\1/'
+          }
+
+          isit() {
+            local coord="$1" dir="$2" art="$3"
+            local base="https://jitpack.io/com/github/$dir/master-SNAPSHOT"
+            local api="https://jitpack.io/api/builds/$coord/master-SNAPSHOT"
+            local st="" ver="" i cand code
+            for i in $(seq 1 30); do
+              st=$(jitpack_durum "$api")
+              echo "  [$i] $coord -> durum=${st:-ALINAMADI}"
+              if [ "$st" = "ok" ]; then break; fi
+              # Uzun sure "building" takildiysa JitPack'i acikca build etmeye tetikle
+              if [ "$i" = "10" ] || [ "$i" = "20" ]; then
+                echo "  [$i] JitPack'e acik build tetigi gonderiliyor"
+                curl -sSL --max-time 90 -o /dev/null "$base/maven-metadata.xml?build=1" 2>/dev/null
               fi
               sleep 15
             done
-            if [ "$ok" != "1" ]; then echo "::warning::JitPack isitilamadi: $base"; fi
-          done
+            if [ "$st" != "ok" ]; then
+              echo "::warning::JitPack 'ok' donmedi: $coord (durum=${st:-ALINAMADI})"
+              return 0
+            fi
+            ver=$(curl -fsSL --max-time 30 "$base/maven-metadata.xml" 2>/dev/null \
+                  | tr -d '\n' | grep -o '<version>[^<]*</version>' | head -n 1 \
+                  | sed 's/<[^>]*>//g')
+            if [ -z "$ver" ]; then
+              echo "::warning::metadata alinamadi: $base"
+              return 0
+            fi
+            for cand in "$art-master-$ver-1.pom" "$art-master-$ver.pom" "$art-$ver.pom"; do
+              code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 30 "$base/$cand")
+              echo "  [.] $cand -> HTTP $code"
+              if [ "$code" = "200" ]; then return 0; fi
+            done
+            echo "::warning::.pom dogrulanamadi: $coord (ver=$ver)"
+            return 0
+          }
+
+          isit "com.github.recloudstream"        "recloudstream/gradle"        "gradle"
+          isit "com.github.recloudstream.gradle" "recloudstream/gradle/gradle" "gradle"
 
       - name: Eklentileri Derle
         run: |
           cd $GITHUB_WORKSPACE/src
           chmod +x gradlew
           if ! ./gradlew make makePluginsJson; then
-            echo "::warning::ilk deneme basarisiz (muhtemelen JitPack), 60sn sonra tekrar deneniyor"
-            sleep 60
-            ./gradlew make makePluginsJson
+            echo "::warning::ilk deneme basarisiz, JitPack durumu 'ok' olana kadar bekleniyor"
+            for i in $(seq 1 20); do
+              st=$(curl -fsSL --max-time 30 \
+                     "https://jitpack.io/api/builds/com.github.recloudstream/gradle/master-SNAPSHOT" 2>/dev/null \
+                   | tr -d '\n' | grep -o '"status"[[:space:]]*:[[:space:]]*"[^"]*"' \
+                   | head -n 1 | sed 's/.*"status"[^"]*"\([^"]*\)".*/\1/')
+              echo "  [$i] JitPack durum=${st:-ALINAMADI}"
+              if [ "$st" = "ok" ]; then break; fi
+              sleep 15
+            done
+            ./gradlew --refresh-dependencies make makePluginsJson
           fi
           cp **/build/*.cs3 $GITHUB_WORKSPACE/builds
           cp build/plugins.json $GITHUB_WORKSPACE/builds
