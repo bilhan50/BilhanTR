@@ -127,7 +127,7 @@ class SezonlukFilm : MainAPI() {
         // * puan: kartlardaki bolum-ust degeri detayda olmayabilir; guvenli sekilde dene
         val rating = document.selectFirst("div.elements div.bolum-ust")?.text()?.trim()?.replace(",", ".")?.toDoubleOrNull()
 
-        return newMovieLoadResponse(title, url, TvType.Movie) {
+        return newMovieLoadResponse(title, url, TvType.Movie, url) {
             this.posterUrl = poster
             this.plot      = altTitle
             this.score     = rating?.let { Score.from10(it) }
