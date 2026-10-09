@@ -58,9 +58,10 @@ class SezonlukFilm : MainAPI() {
                 ?: this.selectFirst("div.poster a")?.attr("href")
         ) ?: return null
 
-        val posterUrl = fixUrlNull(this.selectFirst("img.lazy")?.let {
-            it.attr("data-src").ifEmpty { it.attr("src") }
-        })
+        val img             = this.selectFirst("img.lazy")
+        val birincil: String? = img?.attr("data-src")
+        val ikincil:   String? = img?.attr("src")
+        val posterUrl: String? = fixUrlNull(if (!birincil.isNullOrEmpty()) birincil else ikincil)
         val year = this.selectFirst("div.film-yil")?.text()?.trim()?.toIntOrNull()
 
         return newMovieSearchResponse(baslik, href, TvType.Movie) {
@@ -109,11 +110,10 @@ class SezonlukFilm : MainAPI() {
             ?: return null
 
         // * <div class="film-afis"><img src="..."></div>
-        val poster = fixUrlNull(
-            document.selectFirst("div.film-afis img")?.let {
-                it.attr("src").ifEmpty { it.attr("data-src") }
-            }
-        )
+        val afis              = document.selectFirst("div.film-afis img")
+        val pBirincil: String? = afis?.attr("src")
+        val pIkincil:  String? = afis?.attr("data-src")
+        val poster: String?    = fixUrlNull(if (!pBirincil.isNullOrEmpty()) pBirincil else pIkincil)
 
         // * orijinal ad: <div lang="en" class="bolum-ismi">
         val altTitle = document.selectFirst("div.bolum-ismi")?.text()?.trim()
@@ -124,8 +124,6 @@ class SezonlukFilm : MainAPI() {
             Actor(ad)
         }.distinctBy { it.name }
 
-        val director = document.selectFirst("a[href*='/yonetmen/']")?.text()?.trim()
-
         // * puan: kartlardaki bolum-ust degeri detayda olmayabilir; guvenli sekilde dene
         val rating = document.selectFirst("div.elements div.bolum-ust")?.text()?.trim()?.replace(",", ".")?.toDoubleOrNull()
 
@@ -135,7 +133,6 @@ class SezonlukFilm : MainAPI() {
             this.score     = rating?.let { Score.from10(it) }
             this.duration  = null
             addActors(actors)
-            this.director  = director
         }
     }
 

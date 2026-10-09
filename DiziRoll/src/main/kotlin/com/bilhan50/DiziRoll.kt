@@ -6,7 +6,6 @@ import android.util.Log
 import org.jsoup.nodes.Element
 import com.lagradost.cloudstream3.*
 import com.lagradost.cloudstream3.utils.*
-import com.lagradost.cloudstream3.LoadResponse.Companion.addTrailer
 import com.lagradost.cloudstream3.network.CloudflareKiller
 import okhttp3.Interceptor
 import okhttp3.Response
@@ -35,7 +34,6 @@ class DiziRoll : MainAPI() {
     override val hasMainPage          = true
     override var lang                 = "tr"
     override val hasQuickSearch       = false
-    override val hasSearch            = false
     override val supportedTypes       = setOf(TvType.TvSeries)
 
     // * /dizi-izle tum listeyi, /kesfet "kesfet" bolumunu dondurur
@@ -60,9 +58,10 @@ class DiziRoll : MainAPI() {
         if (!href.contains("/dizi/")) return null
         if (href.count { it == '/' } > 4) return null
 
-        val posterUrl = fixUrlNull(this.selectFirst("img")?.let {
-            it.attr("data-src").ifEmpty { it.attr("src") }
-        })
+        val img        = this.selectFirst("img")
+        val birincil: String? = img?.attr("data-src")
+        val ikincil:   String? = img?.attr("src")
+        val posterUrl: String? = fixUrlNull(if (!birincil.isNullOrEmpty()) birincil else ikincil)
 
         return newTvSeriesSearchResponse(title.ifEmpty { href.substringAfterLast("/") }, href, TvType.TvSeries) {
             this.posterUrl = posterUrl

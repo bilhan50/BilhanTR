@@ -49,7 +49,7 @@ class FilmModu : MainAPI() {
         aktifDomain?.let { return it }
         for (d in listOf(mainUrl) + yedekDomainler) {
             try {
-                val r = app.get("$d/", interceptor = interceptor, throwOnFailure = false)
+                val r = app.get("$d/", interceptor = interceptor)
                 if (r.code == 200) {
                     aktifDomain = d
                     mainUrl     = d
