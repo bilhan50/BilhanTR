@@ -595,10 +595,10 @@
     },
     {
         "iconUrl": "https://www.google.com/s2/favicons?domain=sezonlukdizi.one&sz=%size%",
-        "fileHash": "sha256-b45144a55ce56340bcaee06a330c2789f227e2d5d80cb9b9c49d9d1f6ade511d",
+        "fileHash": "sha256-7cd7559bc09b8c702acc545377d87e60a4fc1390f41477630defa037b2ff7923",
         "apiVersion": 1,
         "repositoryUrl": "https://github.com/bilhan50/BilhanTR",
-        "fileSize": 20019,
+        "fileSize": 20018,
         "status": 1,
         "language": "tr",
         "authors": [
