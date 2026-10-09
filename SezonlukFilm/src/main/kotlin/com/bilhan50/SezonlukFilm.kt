@@ -42,7 +42,7 @@ class SezonlukFilm : MainAPI() {
     )
 
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
-        val url      = if (page > 1) "${request.data}sayfa/$page/" else request.data
+        val url      = if (page > 1) "${request.data}page/$page/" else request.data
         val document = app.get(url, interceptor = interceptor).document
         val home     = document.select("div.movie-box").mapNotNull { it.toSearchResult() }
 
