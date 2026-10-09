@@ -235,10 +235,10 @@
     },
     {
         "iconUrl": "https://www.google.com/s2/favicons?domain=www.filmmodu.one&sz=%size%",
-        "fileHash": "sha256-17562b817776d25fcc41c0151e17686a08ec93204c4bd895e3c4789c2feb5450",
+        "fileHash": "sha256-c43388ebafe04baae910ec9103262e5c34b452a83af5940bd535e6de59a988b6",
         "apiVersion": 1,
         "repositoryUrl": "https://github.com/bilhan50/BilhanTR",
-        "fileSize": 19839,
+        "fileSize": 21353,
         "status": 1,
         "language": "tr",
         "authors": [
@@ -247,7 +247,7 @@
         "tvTypes": [
             "Movie"
         ],
-        "version": 12,
+        "version": 13,
         "internalName": "FilmModu",
         "description": "Film modun geldiyse y\u00fcksek kalitede en yeni filmleri izle, 1080p izleyebilece\u011finiz reklamsiz film sitesi.",
         "url": "https://raw.githubusercontent.com/bilhan50/BilhanTR/builds/FilmModu.cs3",
