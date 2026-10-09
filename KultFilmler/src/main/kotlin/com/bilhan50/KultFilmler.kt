@@ -37,36 +37,57 @@ class KultFilmler : MainAPI() {
     override val hasQuickSearch       = false
     override val supportedTypes       = setOf(TvType.Movie, TvType.TvSeries)
 
+    // * yedek domain: ana domain cokerse otomatik gecis yapilir
+    private val yedekDomainler = listOf(
+        "https://kultfilmler.org",
+    )
+    private var aktifDomain: String? = null
+
+    private suspend fun siteUrl(): String {
+        aktifDomain?.let { return it }
+        for (d in listOf(mainUrl) + yedekDomainler) {
+            try {
+                val r = app.get("$d/", interceptor = interceptor, throwOnFailure = false)
+                if (r.code == 200) {
+                    aktifDomain = d
+                    mainUrl     = d
+                    return d
+                }
+            } catch (_: Throwable) {}
+        }
+        return mainUrl
+    }
+
     override val mainPage = mainPageOf(
-        "${mainUrl}/page/"                                      to "Son Filmler",
-        "${mainUrl}/category/aile-filmleri-izle/page/"		    to "Aile",
-        "${mainUrl}/category/aksiyon-filmleri-izle/page/"	    to "Aksiyon",
-        "${mainUrl}/category/animasyon-filmleri-izle/page/"	    to "Animasyon",
-        "${mainUrl}/category/belgesel-izle/page/"			    to "Belgesel",
-        "${mainUrl}/category/bilim-kurgu-filmleri-izle/page/"   to "Bilim Kurgu",
-        "${mainUrl}/category/biyografi-filmleri-izle/page/"	    to "Biyografi",
-        "${mainUrl}/category/dram-filmleri-izle/page/"		    to "Dram",
-        "${mainUrl}/category/fantastik-filmleri-izle/page/"	    to "Fantastik",
-        "${mainUrl}/category/gerilim-filmleri-izle/page/"	    to "Gerilim",
-        "${mainUrl}/category/gizem-filmleri-izle/page/"		    to "Gizem",
-        "${mainUrl}/category/kara-filmleri-izle/page/"		    to "Kara",
-        "${mainUrl}/category/kisa-film-izle/page/"			    to "Kısa Metrajlı",
-        "${mainUrl}/category/komedi-filmleri-izle/page/"		to "Komedi",
-        "${mainUrl}/category/korku-filmleri-izle/page/"		    to "Korku",
-        "${mainUrl}/category/macera-filmleri-izle/page/"		to "Macera",
-        "${mainUrl}/category/muzik-filmleri-izle/page/"		    to "Müzik",
-        "${mainUrl}/category/polisiye-filmleri-izle/page/"	    to "Polisiye",
-        "${mainUrl}/category/politik-filmleri-izle/page/"	    to "Politik",
-        "${mainUrl}/category/romantik-filmleri-izle/page/"	    to "Romantik",
-        "${mainUrl}/category/savas-filmleri-izle/page/"		    to "Savaş",
-        "${mainUrl}/category/spor-filmleri-izle/page/"		    to "Spor",
-        "${mainUrl}/category/suc-filmleri-izle/page/"		    to "Suç",
-        "${mainUrl}/category/tarih-filmleri-izle/page/"		    to "Tarih",
-        "${mainUrl}/category/yerli-filmleri-izle/page/"		    to "Yerli"
+        "/page/"                                      to "Son Filmler",
+        "/category/aile-filmleri-izle/page/"		    to "Aile",
+        "/category/aksiyon-filmleri-izle/page/"	    to "Aksiyon",
+        "/category/animasyon-filmleri-izle/page/"	    to "Animasyon",
+        "/category/belgesel-izle/page/"			    to "Belgesel",
+        "/category/bilim-kurgu-filmleri-izle/page/"   to "Bilim Kurgu",
+        "/category/biyografi-filmleri-izle/page/"	    to "Biyografi",
+        "/category/dram-filmleri-izle/page/"		    to "Dram",
+        "/category/fantastik-filmleri-izle/page/"	    to "Fantastik",
+        "/category/gerilim-filmleri-izle/page/"	    to "Gerilim",
+        "/category/gizem-filmleri-izle/page/"		    to "Gizem",
+        "/category/kara-filmleri-izle/page/"		    to "Kara",
+        "/category/kisa-film-izle/page/"			    to "Kısa Metrajlı",
+        "/category/komedi-filmleri-izle/page/"		to "Komedi",
+        "/category/korku-filmleri-izle/page/"		    to "Korku",
+        "/category/macera-filmleri-izle/page/"		to "Macera",
+        "/category/muzik-filmleri-izle/page/"		    to "Müzik",
+        "/category/polisiye-filmleri-izle/page/"	    to "Polisiye",
+        "/category/politik-filmleri-izle/page/"	    to "Politik",
+        "/category/romantik-filmleri-izle/page/"	    to "Romantik",
+        "/category/savas-filmleri-izle/page/"		    to "Savaş",
+        "/category/spor-filmleri-izle/page/"		    to "Spor",
+        "/category/suc-filmleri-izle/page/"		    to "Suç",
+        "/category/tarih-filmleri-izle/page/"		    to "Tarih",
+        "/category/yerli-filmleri-izle/page/"		    to "Yerli"
     )
 
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
-        val document = app.get("${request.data}${page}", interceptor = interceptor).document
+        val document = app.get("${siteUrl()}${request.data}${page}", interceptor = interceptor).document
         val home     = document.select("a.mcard, div.movie-box").mapNotNull { it.toSearchResult() }
 
         return newHomePageResponse(request.name, home)

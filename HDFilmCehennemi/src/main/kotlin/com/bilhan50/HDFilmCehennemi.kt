@@ -38,25 +38,46 @@ class HDFilmCehennemi : MainAPI() {
     override val hasQuickSearch       = true
     override val supportedTypes       = setOf(TvType.Movie, TvType.TvSeries)
 
+    // * yedek domain: ana domain cokerse otomatik gecis yapilir
+    private val yedekDomainler = listOf(
+        "https://www.hdfilmcehennemi.vip",
+    )
+    private var aktifDomain: String? = null
+
+    private suspend fun siteUrl(): String {
+        aktifDomain?.let { return it }
+        for (d in listOf(mainUrl) + yedekDomainler) {
+            try {
+                val r = app.get("$d/", interceptor = interceptor, throwOnFailure = false)
+                if (r.code == 200) {
+                    aktifDomain = d
+                    mainUrl     = d
+                    return d
+                }
+            } catch (_: Throwable) {}
+        }
+        return mainUrl
+    }
+
     override val mainPage = mainPageOf(
-        mainUrl to "Yeni Eklenen Filmler",
-        "${mainUrl}/yabancidiziizle-2"                    to "Yeni Eklenen Diziler",
-        "${mainUrl}/category/tavsiye-filmler-izle2"       to "Tavsiye Filmler",
-        "${mainUrl}/imdb-7-puan-uzeri-filmler"            to "IMDB 7+ Filmler",
-        "${mainUrl}/en-cok-yorumlananlar-1"               to "En Çok Yorumlananlar",
-        "${mainUrl}/en-cok-begenilen-filmleri-izle"       to "En Çok Beğenilenler",
-        "${mainUrl}/tur/aile-filmleri-izleyin-6"          to "Aile Filmleri",
-        "${mainUrl}/tur/aksiyon-filmleri-izleyin-3"       to "Aksiyon Filmleri",
-        "${mainUrl}/tur/animasyon-filmlerini-izleyin-4"   to "Animasyon Filmleri",
-        "${mainUrl}/tur/belgesel-filmlerini-izle-1"       to "Belgesel Filmleri",
-        "${mainUrl}/tur/bilim-kurgu-filmlerini-izleyin-2" to "Bilim Kurgu Filmleri",
-        "${mainUrl}/tur/komedi-filmlerini-izleyin-1"      to "Komedi Filmleri",
-        "${mainUrl}/tur/korku-filmlerini-izle-2/"         to "Korku Filmleri",
-        "${mainUrl}/tur/romantik-filmleri-izle-1"         to "Romantik Filmleri"
+        ""                                            to "Yeni Eklenen Filmler",
+        "/yabancidiziizle-2"                          to "Yeni Eklenen Diziler",
+        "/category/tavsiye-filmler-izle2"             to "Tavsiye Filmler",
+        "/imdb-7-puan-uzeri-filmler"                  to "IMDB 7+ Filmler",
+        "/en-cok-yorumlananlar-1"                     to "En Çok Yorumlananlar",
+        "/en-cok-begenilen-filmleri-izle"             to "En Çok Beğenilenler",
+        "/tur/aile-filmleri-izleyin-6"                to "Aile Filmleri",
+        "/tur/aksiyon-filmleri-izleyin-3"             to "Aksiyon Filmleri",
+        "/tur/animasyon-filmlerini-izleyin-4"         to "Animasyon Filmleri",
+        "/tur/belgesel-filmlerini-izle-1"             to "Belgesel Filmleri",
+        "/tur/bilim-kurgu-filmlerini-izleyin-2"       to "Bilim Kurgu Filmleri",
+        "/tur/komedi-filmlerini-izleyin-1"            to "Komedi Filmleri",
+        "/tur/korku-filmlerini-izle-2/"               to "Korku Filmleri",
+        "/tur/romantik-filmleri-izle-1"               to "Romantik Filmleri"
     )
 
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
-        val document = app.get(request.data, interceptor = interceptor).document
+        val document = app.get("${siteUrl()}${request.data}", interceptor = interceptor).document
 
         val home: List<SearchResponse>?
 

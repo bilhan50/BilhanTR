@@ -39,38 +39,59 @@ class FilmModu : MainAPI() {
         }
     }
 
+    // * yedek domain: ana domain cokerse otomatik gecis yapilir
+    private val yedekDomainler = listOf(
+        "https://www.filmmodu.cc",
+    )
+    private var aktifDomain: String? = null
+
+    private suspend fun siteUrl(): String {
+        aktifDomain?.let { return it }
+        for (d in listOf(mainUrl) + yedekDomainler) {
+            try {
+                val r = app.get("$d/", interceptor = interceptor, throwOnFailure = false)
+                if (r.code == 200) {
+                    aktifDomain = d
+                    mainUrl     = d
+                    return d
+                }
+            } catch (_: Throwable) {}
+        }
+        return mainUrl
+    }
+
     override val mainPage = mainPageOf(
-        "${mainUrl}/film-tur/4k-film-izle"          to "4K",
-        "${mainUrl}/film-tur/aile-filmleri"         to "Aile",
-        "${mainUrl}/film-tur/aksiyon"               to "Aksiyon",
-        "${mainUrl}/film-tur/animasyon"             to "Animasyon",
-        "${mainUrl}/film-tur/belgeseller"           to "Belgesel",
-        "${mainUrl}/film-tur/bilim-kurgu-filmleri"  to "Bilim-Kurgu",
-        "${mainUrl}/film-tur/dram-filmleri"         to "Dram",
-        "${mainUrl}/film-tur/fantastik-filmler"     to "Fantastik",
-        "${mainUrl}/film-tur/gerilim"               to "Gerilim",
-        "${mainUrl}/film-tur/gizem-filmleri"        to "Gizem",
-        "${mainUrl}/film-tur/hd-hint-filmleri"      to "Hint Filmleri",
-        "${mainUrl}/film-tur/kisa-film"             to "Kısa Film",
-        "${mainUrl}/film-tur/hd-komedi-filmleri"    to "Komedi",
-        "${mainUrl}/film-tur/korku-filmleri"        to "Korku",
-        "${mainUrl}/film-tur/kult-filmler-izle"     to "Kült Filmler",
-        "${mainUrl}/film-tur/macera-filmleri"       to "Macera",
-        "${mainUrl}/film-tur/muzik"                 to "Müzik",
-        "${mainUrl}/film-tur/odullu-filmler-izle"   to "Oscar Ödüllü Filmler",
-        "${mainUrl}/film-tur/romantik-filmler"      to "Romantik",
-        "${mainUrl}/film-tur/savas"                 to "Savaş",
-        "${mainUrl}/film-tur/savas-filmleri"        to "Savaş",
-        "${mainUrl}/film-tur/stand-up"              to "Stand Up",
-        "${mainUrl}/film-tur/suc-filmleri"          to "Suç",
-        "${mainUrl}/film-tur/tarih"                 to "Tarih",
-        "${mainUrl}/film-tur/tavsiye-filmler"       to "Tavsiye Filmler",
-        "${mainUrl}/film-tur/tv-film"               to "TV film",
-        "${mainUrl}/film-tur/vahsi-bati-filmleri"   to "Vahşi Batı",
+        "/film-tur/4k-film-izle"          to "4K",
+        "/film-tur/aile-filmleri"         to "Aile",
+        "/film-tur/aksiyon"               to "Aksiyon",
+        "/film-tur/animasyon"             to "Animasyon",
+        "/film-tur/belgeseller"           to "Belgesel",
+        "/film-tur/bilim-kurgu-filmleri"  to "Bilim-Kurgu",
+        "/film-tur/dram-filmleri"         to "Dram",
+        "/film-tur/fantastik-filmler"     to "Fantastik",
+        "/film-tur/gerilim"               to "Gerilim",
+        "/film-tur/gizem-filmleri"        to "Gizem",
+        "/film-tur/hd-hint-filmleri"      to "Hint Filmleri",
+        "/film-tur/kisa-film"             to "Kısa Film",
+        "/film-tur/hd-komedi-filmleri"    to "Komedi",
+        "/film-tur/korku-filmleri"        to "Korku",
+        "/film-tur/kult-filmler-izle"     to "Kült Filmler",
+        "/film-tur/macera-filmleri"       to "Macera",
+        "/film-tur/muzik"                 to "Müzik",
+        "/film-tur/odullu-filmler-izle"   to "Oscar Ödüllü Filmler",
+        "/film-tur/romantik-filmler"      to "Romantik",
+        "/film-tur/savas"                 to "Savaş",
+        "/film-tur/savas-filmleri"        to "Savaş",
+        "/film-tur/stand-up"              to "Stand Up",
+        "/film-tur/suc-filmleri"          to "Suç",
+        "/film-tur/tarih"                 to "Tarih",
+        "/film-tur/tavsiye-filmler"       to "Tavsiye Filmler",
+        "/film-tur/tv-film"               to "TV film",
+        "/film-tur/vahsi-bati-filmleri"   to "Vahşi Batı",
     )
 
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
-        val document = app.get("${request.data}?page=${page}", referer = "$mainUrl/", interceptor = interceptor).document
+        val document = app.get("${siteUrl()}${request.data}?page=${page}", referer = "$mainUrl/", interceptor = interceptor).document
         val home     = document.select("div.movie").mapNotNull { it.toMainPageResult() }
 
         return newHomePageResponse(request.name, home)

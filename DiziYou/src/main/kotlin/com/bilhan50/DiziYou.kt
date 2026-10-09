@@ -37,26 +37,47 @@ class DiziYou : MainAPI() {
     override val hasQuickSearch       = false
     override val supportedTypes       = setOf(TvType.TvSeries)
 
+    // * yedek domain: ana domain cokerse otomatik gecis yapilir
+    private val yedekDomainler = listOf(
+        "https://www.diziyou.net",
+    )
+    private var aktifDomain: String? = null
+
+    private suspend fun siteUrl(): String {
+        aktifDomain?.let { return it }
+        for (d in listOf(mainUrl) + yedekDomainler) {
+            try {
+                val r = app.get("$d/", interceptor = interceptor, throwOnFailure = false)
+                if (r.code == 200) {
+                    aktifDomain = d
+                    mainUrl     = d
+                    return d
+                }
+            } catch (_: Throwable) {}
+        }
+        return mainUrl
+    }
+
     override val mainPage = mainPageOf(
-        "${mainUrl}/dizi-arsivi/page/SAYFA/?tur=Aile"                 to "Aile",
-        "${mainUrl}/dizi-arsivi/page/SAYFA/?tur=Aksiyon"              to "Aksiyon",
-        "${mainUrl}/dizi-arsivi/page/SAYFA/?tur=Animasyon"            to "Animasyon",
-        "${mainUrl}/dizi-arsivi/page/SAYFA/?tur=Belgesel"             to "Belgesel",
-        "${mainUrl}/dizi-arsivi/page/SAYFA/?tur=Bilim+Kurgu"          to "Bilim Kurgu",
-        "${mainUrl}/dizi-arsivi/page/SAYFA/?tur=Dram"                 to "Dram",
-        "${mainUrl}/dizi-arsivi/page/SAYFA/?tur=Fantazi"              to "Fantazi",
-        "${mainUrl}/dizi-arsivi/page/SAYFA/?tur=Gerilim"              to "Gerilim",
-        "${mainUrl}/dizi-arsivi/page/SAYFA/?tur=Gizem"                to "Gizem",
-        "${mainUrl}/dizi-arsivi/page/SAYFA/?tur=Komedi"               to "Komedi",
-        "${mainUrl}/dizi-arsivi/page/SAYFA/?tur=Korku"                to "Korku",
-        "${mainUrl}/dizi-arsivi/page/SAYFA/?tur=Macera"               to "Macera",
-        "${mainUrl}/dizi-arsivi/page/SAYFA/?tur=Sava%C5%9F"           to "Savaş",
-        "${mainUrl}/dizi-arsivi/page/SAYFA/?tur=Su%C3%A7"             to "Suç",
-        "${mainUrl}/dizi-arsivi/page/SAYFA/?tur=Vah%C5%9Fi+Bat%C4%B1" to "Vahşi Batı"
+        "/dizi-arsivi/page/SAYFA/?tur=Aile"                 to "Aile",
+        "/dizi-arsivi/page/SAYFA/?tur=Aksiyon"              to "Aksiyon",
+        "/dizi-arsivi/page/SAYFA/?tur=Animasyon"            to "Animasyon",
+        "/dizi-arsivi/page/SAYFA/?tur=Belgesel"             to "Belgesel",
+        "/dizi-arsivi/page/SAYFA/?tur=Bilim+Kurgu"          to "Bilim Kurgu",
+        "/dizi-arsivi/page/SAYFA/?tur=Dram"                 to "Dram",
+        "/dizi-arsivi/page/SAYFA/?tur=Fantazi"              to "Fantazi",
+        "/dizi-arsivi/page/SAYFA/?tur=Gerilim"              to "Gerilim",
+        "/dizi-arsivi/page/SAYFA/?tur=Gizem"                to "Gizem",
+        "/dizi-arsivi/page/SAYFA/?tur=Komedi"               to "Komedi",
+        "/dizi-arsivi/page/SAYFA/?tur=Korku"                to "Korku",
+        "/dizi-arsivi/page/SAYFA/?tur=Macera"               to "Macera",
+        "/dizi-arsivi/page/SAYFA/?tur=Sava%C5%9F"           to "Savaş",
+        "/dizi-arsivi/page/SAYFA/?tur=Su%C3%A7"             to "Suç",
+        "/dizi-arsivi/page/SAYFA/?tur=Vah%C5%9Fi+Bat%C4%B1" to "Vahşi Batı"
     )
 
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
-        val url      = request.data.replace("SAYFA", "$page")
+        val url      = "${siteUrl()}${request.data.replace("SAYFA", "$page")}"
         val document = app.get(url, interceptor = interceptor).document
         val home     = document.select("div.single-item").mapNotNull { it.toMainPageResult() }
 

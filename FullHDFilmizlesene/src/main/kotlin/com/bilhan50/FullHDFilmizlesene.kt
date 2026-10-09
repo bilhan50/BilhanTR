@@ -43,37 +43,60 @@ class FullHDFilmizlesene : MainAPI() {
     override val hasQuickSearch       = false
     override val supportedTypes       = setOf(TvType.Movie)
 
+    // * yedek domain: ana domain cokerse otomatik gecis yapilir
+    private val yedekDomainler = listOf(
+        "https://www.fullhdfilmizlesene.co",
+    )
+    private var aktifDomain: String? = null
+
+    private suspend fun siteUrl(): String {
+        aktifDomain?.let { return it }
+        for (d in listOf(mainUrl) + yedekDomainler) {
+            try {
+                val r = app.get("$d/", interceptor = interceptor, throwOnFailure = false)
+                if (r.code == 200) {
+                    aktifDomain = d
+                    mainUrl     = d
+                    return d
+                }
+            } catch (_: Throwable) {}
+        }
+        return mainUrl
+    }
+
     override val mainPage = mainPageOf(
-        "${mainUrl}/en-cok-izlenen-filmler"                    to "En Cok izlenen Filmler",
-        "${mainUrl}/film-listeleri"                            to "Film Listeleri",
-        "${mainUrl}/seri-filmler"                              to "Seriler",
-        "${mainUrl}/filmizle/yerli-filmler"                    to "Yerli Filmler",
-        "${mainUrl}/filmizle/aksiyon-filmleri"                 to "Aksiyon Filmleri",
-        "${mainUrl}/filmizle/aile-filmleri"                    to "Aile Filmleri",
-        "${mainUrl}/filmizle/animasyon-filmleri"               to "Animasyon Filmleri",
-        "${mainUrl}/filmizle/belgesel-filmleri"                to "Belgeseller",
-        "${mainUrl}/filmizle/bilim-kurgu-filmleri"             to "Bilim Kurgu Filmleri",
-        "${mainUrl}/filmizle/bluray-filmler"                   to "Blu Ray Filmler",
-        "${mainUrl}/filmizle/cizgi-filmler"                    to "Cizgi Filmler",
-        "${mainUrl}/filmizle/dram-filmler-izle"                to "Dram Filmleri",
-        "${mainUrl}/filmizle/fantastik-filmler"                to "Fantastik Filmler",
-        "${mainUrl}/filmizle/gerilim-filmleri"                 to "Gerilim Filmleri",
-        "${mainUrl}/filmizle/gizem-filmleri"                   to "Gizem Filmleri",
-        "${mainUrl}/filmizle/hint-filmleri"                    to "Hint Filmleri",
-        "${mainUrl}/filmizle/komedi-filmleri"                  to "Komedi Filmleri",
-        "${mainUrl}/filmizle/korku-filmleri"                   to "Korku Filmleri",
-        "${mainUrl}/filmizle/macera-filmleri-izle"             to "Macera Filmleri",
-        "${mainUrl}/filmizle/muzikal-filmler"                  to "Muzikal Filmler",
-        "${mainUrl}/filmizle/polisiye-filmleri"                to "Polisiye Filmleri",
-        "${mainUrl}/filmizle/psikolojik-filmler"               to "Psikolojik Filmler",
-        "${mainUrl}/filmizle/romantik-filmler"                 to "Romantik Filmler",
-        "${mainUrl}/filmizle/savas-filmleri"                   to "Savas Filmleri",
-        "${mainUrl}/filmizle/suc-filmleri"                     to "Suc Filmleri",
+        "/en-cok-izlenen-filmler"                    to "En Cok izlenen Filmler",
+        "/film-listeleri"                            to "Film Listeleri",
+        "/seri-filmler"                              to "Seriler",
+        "/filmizle/yerli-filmler"                    to "Yerli Filmler",
+        "/filmizle/aksiyon-filmleri"                 to "Aksiyon Filmleri",
+        "/filmizle/aile-filmleri"                    to "Aile Filmleri",
+        "/filmizle/animasyon-filmleri"               to "Animasyon Filmleri",
+        "/filmizle/belgesel-filmleri"                to "Belgeseller",
+        "/filmizle/bilim-kurgu-filmleri"             to "Bilim Kurgu Filmleri",
+        "/filmizle/bluray-filmler"                   to "Blu Ray Filmler",
+        "/filmizle/cizgi-filmler"                    to "Cizgi Filmler",
+        "/filmizle/dram-filmler-izle"                to "Dram Filmleri",
+        "/filmizle/fantastik-filmler"                to "Fantastik Filmler",
+        "/filmizle/gerilim-filmleri"                 to "Gerilim Filmleri",
+        "/filmizle/gizem-filmleri"                   to "Gizem Filmleri",
+        "/filmizle/hint-filmleri"                    to "Hint Filmleri",
+        "/filmizle/komedi-filmleri"                  to "Komedi Filmleri",
+        "/filmizle/korku-filmleri"                   to "Korku Filmleri",
+        "/filmizle/macera-filmleri-izle"             to "Macera Filmleri",
+        "/filmizle/muzikal-filmler"                  to "Muzikal Filmler",
+        "/filmizle/polisiye-filmleri"                to "Polisiye Filmleri",
+        "/filmizle/psikolojik-filmler"               to "Psikolojik Filmler",
+        "/filmizle/romantik-filmler"                 to "Romantik Filmler",
+        "/filmizle/savas-filmleri"                   to "Savas Filmleri",
+        "/filmizle/suc-filmleri"                     to "Suc Filmleri",
     )
 
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
-        val url      = if (page <= 1) request.data else "${request.data}/$page"
-        val document = app.get(url, interceptor = interceptor).document
+        val base      = siteUrl()
+        val yol       = if (page <= 1) request.data else "${request.data}/$page"
+        val url       = if (yol.isEmpty()) base else "$base$yol"
+        val document  = app.get(url, interceptor = interceptor).document
         val home     = document.select("li.film").mapNotNull { it.toSearchResult() }
 
         return newHomePageResponse(request.name, home)

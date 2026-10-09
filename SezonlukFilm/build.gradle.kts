@@ -1,9 +1,9 @@
-version = 9
+version = 1
 
 cloudstream {
     authors     = listOf("bilhan50")
     language    = "tr"
-    description = "Sinema zevkini evinize kadar getirdik. Türkiye'nin lider Film sitesinde, en yeni filmleri Full HD izleyin."
+    description = "SezonlukFilm - en yeni filmleri full HD, turkce dublaj veya altyazili 4K kalitesinde izleyin."
 
     /**
      * Status int as the following:
@@ -14,5 +14,5 @@ cloudstream {
     **/
     status  = 1 // will be 3 if unspecified
     tvTypes = listOf("Movie")
-    iconUrl = "https://www.google.com/s2/favicons?domain=www.fullhdfilmizlesene.de&sz=%size%"
+    iconUrl = "https://www.google.com/s2/favicons?domain=sezonlukdizi.one&sz=%size%"
 }
