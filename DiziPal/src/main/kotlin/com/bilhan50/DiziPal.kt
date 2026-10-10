@@ -30,7 +30,7 @@ class DiziPal : MainAPI() {
             return response
         }
     }
-    override var mainUrl              = "https://dizipal2135.com"
+    override var mainUrl              = "https://dizipal2136.com"
     override var name                 = "DiziPal"
     override val hasMainPage          = true
     override var lang                 = "tr"
