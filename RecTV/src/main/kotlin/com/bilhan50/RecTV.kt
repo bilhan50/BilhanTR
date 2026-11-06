@@ -10,7 +10,7 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import okhttp3.Interceptor
 
 class RecTV : MainAPI() {
-    override var mainUrl              = "https://b.prectv38.sbs"
+    override var mainUrl              = "https://a.psrectv80.xyz"
     override var name                 = "RecTV"
     override val hasMainPage          = false
     override var lang                 = "tr"
